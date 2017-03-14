@@ -1,10 +1,12 @@
 package utils;
 
 import java.io.File;
+import java.util.regex.Pattern;
 
 public class Utils {
 	
 	
+	private static final Pattern INTEGER = Pattern.compile("[0-9]+");
 	
 	
 	
@@ -19,6 +21,8 @@ public class Utils {
 	}
 	
 	
-	
+	public static boolean isInteger(String Integer){
+		return INTEGER.matcher(Integer).matches(); 
+	}
 	
 }
