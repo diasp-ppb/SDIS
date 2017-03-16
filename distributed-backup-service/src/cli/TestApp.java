@@ -2,6 +2,10 @@ package cli;
 
 import utils.Utils;
 
+import java.util.ArrayList;
+
+import chunk.Chunk;
+
 public class TestApp {
 	
 	private static final int PEER_AP = 0;
@@ -17,7 +21,7 @@ public class TestApp {
 			System.out.println("Usage:  java TestApp <peer_ap> <sub_protocol> <opnd_1> <opnd_2> ");
 			System.out.println("");
 			System.out.println("<peer_ap> Is the peer's access point.");
-			System.out.println("<sub-protocol> Options: BACKUP | RESTORE | DELETE | RECLAIM");
+			System.out.println("<sub-protocol> Options: BACKUP | RESTORE | DELETE | RECLAIM | STATE");
 			System.out.println("<opnd_1> Path name of the file | amount of space to reclaim");
 			System.out.println("<opnd_2> An integer that specifies the desired replication degree");
 			return;
@@ -38,21 +42,44 @@ public class TestApp {
 		String request = cmdInfo[0] + " " + cmdInfo[1]+" "+cmdInfo[2];
 		
 		System.out.println("RESQUEST: " + request); //TESTE TEMP
+		
+		//TODO BUILD REQUEST HERE
+		
+		//TEST CHUNK SPLIT 
+		/*
+		ArrayList<Chunk> teste = Utils.splitFile(cmdInfo[1], 3);
+		
+		for(int i = 0; i < teste.size(); i++){
+			System.out.println(teste.get(i).toString());
+		}*/
+	
 	}
 
 
-private static boolean validCommand(String[] args, String[] request){
+private static boolean validCommand(String[] args, String[] request) {
 	
-	//TODO CHECK PEER_AP
-	//TODO VALIDAR os argumentos 
+	//TODO  Validar se ficheiro existe 
 	
 	String command = args[COMMAND];		
 	int n_args = args.length;
 	System.out.println("COMMAND "+command  + " " + n_args);
+	
+	if(!Utils.isIPV4(args[PEER_AP]) && !Utils.isIPV6(args[PEER_AP]) && !Utils.isInteger(args[PEER_AP])){
+		System.out.println("INVALID IP/PORT");
+		return false;
+	}
+		
+	
 	switch(command){
 		case "BACKUP":
 				if(n_args != 4 || !(Utils.isInteger(args[OPND_2])))
 					return false;
+				
+				
+				if(!Utils.fileExist(args[OPND_1])){ //TODO not sure
+					System.out.println("File doesn't exits");
+					return false;
+				};			
 				request[1] = args[OPND_1];
 				request[2] = args[OPND_2];
 			break;
@@ -60,12 +87,18 @@ private static boolean validCommand(String[] args, String[] request){
 		case "DELETE":
 				if(n_args != 3)
 					return false;
+				
+				if(!Utils.fileExist(args[OPND_1])){ //TODO not sure
+					System.out.println("File doesn't exits");
+					return false;
+				};
 				request[1] = args[OPND_1];
 			break;
 			
 		case "RECLAIM":
-				if(n_args != 3)
+				if(n_args != 3 || !Utils.isInteger(args[OPND_1]))
 					return false;
+				
 				request[1] = args[OPND_1];
 			break;
 		case "STATE":

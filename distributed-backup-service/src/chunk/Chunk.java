@@ -4,7 +4,7 @@ package chunk;
 //TODO COMO IDENTIFICAR OS PACOTES
 public class Chunk {
 		
-	private final static int MAX_LENGTH = 64000; // 64Kbytes
+	public final static int MAX_LENGTH = 64000; // 64Kbytes
 	
 	private int replicationDegree;
 	
@@ -35,5 +35,10 @@ public class Chunk {
 	
 	public String getFileId() {
 		return this.fileId;
+	}
+	
+	@Override
+	public String toString() {
+		return new String("CHUNK: RepDregee="+replicationDegree+" chunkNo:"+ chunkNo + "\n FileID:" + fileId + " DataSize:"+fileData.length);
 	}
 }
