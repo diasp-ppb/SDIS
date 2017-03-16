@@ -2,8 +2,11 @@ package cli;
 
 import utils.Utils;
 
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
 
+import channels.RMIservice;
 import chunk.Chunk;
 
 public class TestApp {
@@ -16,17 +19,8 @@ public class TestApp {
 	
 	public static void main( String [] args){
 		
-		if(args.length < 2 || args.length > 4){
-			System.out.println("TestAPP");
-			System.out.println("Usage:  java TestApp <peer_ap> <sub_protocol> <opnd_1> <opnd_2> ");
-			System.out.println("");
-			System.out.println("<peer_ap> Is the peer's access point.");
-			System.out.println("<sub-protocol> Options: BACKUP | RESTORE | DELETE | RECLAIM | STATE");
-			System.out.println("<opnd_1> Path name of the file | amount of space to reclaim");
-			System.out.println("<opnd_2> An integer that specifies the desired replication degree");
-			return;
-		}
 		
+		//TEMP
 		System.out.println(args[PEER_AP]);
 		System.out.println(args[COMMAND]);
 		System.out.println(args[OPND_1]);
@@ -52,7 +46,20 @@ public class TestApp {
 		for(int i = 0; i < teste.size(); i++){
 			System.out.println(teste.get(i).toString());
 		}*/
-	
+		
+		
+		// RMI TO TEST SERVER SIDE
+		
+		 try {
+			 	System.out.println(args[PEER_AP]);
+	            Registry registry = LocateRegistry.getRegistry(8787);
+	            RMIservice stub = (RMIservice) registry.lookup("HelloServer1");
+	            String response = stub.sayHello();
+	            System.out.println("response: " + response);
+	        } catch (Exception e) {
+	            System.err.println("Client exception: " + e.toString());
+	            e.printStackTrace();
+	        }
 	}
 
 
@@ -60,6 +67,17 @@ private static boolean validCommand(String[] args, String[] request) {
 	
 	//TODO  Validar se ficheiro existe 
 	
+	if(args.length < 2 || args.length > 4){
+		System.out.println("TestAPP");
+		System.out.println("Usage:  java TestApp <peer_ap> <sub_protocol> <opnd_1> <opnd_2> ");
+		System.out.println("");
+		System.out.println("<peer_ap> Is the peer's access point.");
+		System.out.println("<sub-protocol> Options: BACKUP | RESTORE | DELETE | RECLAIM | STATE");
+		System.out.println("<opnd_1> Path name of the file | amount of space to reclaim");
+		System.out.println("<opnd_2> An integer that specifies the desired replication degree");
+		return false;
+	}
+				
 	String command = args[COMMAND];		
 	int n_args = args.length;
 	System.out.println("COMMAND "+command  + " " + n_args);
