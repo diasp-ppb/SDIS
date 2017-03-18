@@ -52,7 +52,7 @@ public class TestApp {
 		
 		 try {
 			 	System.out.println(args[PEER_AP]);
-	            Registry registry = LocateRegistry.getRegistry(8787);
+	            Registry registry = LocateRegistry.getRegistry();
 	            RMIservice stub = (RMIservice) registry.lookup("HelloServer1");
 	            String response = stub.sayHello();
 	            System.out.println("response: " + response);
