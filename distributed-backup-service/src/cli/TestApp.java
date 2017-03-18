@@ -1,6 +1,6 @@
 package cli;
 
-import utils.Utils;
+import utils.*;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -49,7 +49,7 @@ public class TestApp {
 		
 		
 		// RMI TO TEST SERVER SIDE
-		
+		/*
 		 try {
 			 	System.out.println(args[PEER_AP]);
 	            Registry registry = LocateRegistry.getRegistry();
@@ -60,9 +60,13 @@ public class TestApp {
 	            System.err.println("Client exception: " + e.toString());
 	            e.printStackTrace();
 	        }
+	        
+	    */
+		
+		// TO TEST MESSAGE SPLIT
+	//	Message t = new Message("asdasdasd \r\n\r\n asdasdadasda"," ");
+ 
 	}
-
-
 private static boolean validCommand(String[] args, String[] request) {
 	
 	//TODO  Validar se ficheiro existe 
