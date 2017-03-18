@@ -14,7 +14,7 @@ public class Peer implements RMIservice {
 	private static String RMIobjName;
 	
 	private static int protocolVersion;
-	private static String senderId;
+	private static String serverId;
 	private static String accessPoint;
 	
 	private static InetAddress mcAddress;
