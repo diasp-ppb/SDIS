@@ -7,16 +7,19 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
+import channels.BackupChannel;
+import channels.ControlChannel;
 import channels.RMIservice;
+import channels.RestoreChannel;
 
 public class Peer implements RMIservice {
 
 	private static String RMIobjName;
-	
+
 	private static int protocolVersion;
 	private static String serverId;
 	private static String accessPoint;
-	
+
 	private static InetAddress mcAddress;
 	private static int mcPort;
 	private static InetAddress mdbAddress;
@@ -24,11 +27,17 @@ public class Peer implements RMIservice {
 	private static InetAddress mdrAddress;
 	private static int mdrPort;
 
+	private static ControlChannel mcChannel;
+	private static BackupChannel mdbChannel;
+	private static RestoreChannel mdrChannel;
+
 	public static void main(String [] args) throws UnknownHostException {
 		if (!validateArgs(args)) {
 			System.out.println("USAGE: <mcAddress> <mcPort> <mdbAddress> <mdbPort> <mdrAddress> <mdrPort>");
 			return;
 		}
+
+		initChannels();
 
 		startRMIservice();
 	}
@@ -39,7 +48,7 @@ public class Peer implements RMIservice {
 		if (args.length != 6) {
 			return false; 
 		}
-		
+
 		protocolVersion = Integer.parseInt(args[0]);
 		serverId = args[1];
 		accessPoint = args[2];
@@ -49,8 +58,14 @@ public class Peer implements RMIservice {
 		mdbPort = Integer.parseInt(args[6]);
 		mdrAddress = InetAddress.getByName(args[7]);
 		mdrPort = Integer.parseInt(args[8]);
-		
+
 		return true;
+	}
+
+	public static void initChannels() {
+		mcChannel = new ControlChannel(mcAddress, mcPort);
+		mdbChannel = new BackupChannel(mdbAddress, mdbPort);
+		mdrChannel = new RestoreChannel(mdrAddress, mdrPort);
 	}
 
 	public static void startRMIservice() {
