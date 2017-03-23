@@ -11,7 +11,7 @@ public class Message {
 	
 	private EnumMap<Field, String> fields;
 	
-	public enum Field {
+	private enum Field {
 		MESSAGE_TYPE,
 		VERSION,
 		SENDER_ID,
@@ -38,7 +38,7 @@ public class Message {
 		parseHeaderFields();
 	}
 	
-	public void parseHeaderFields() {
+	private void parseHeaderFields() {
 		String[] fieldArray = header.split("\\s+");
 		
 		for (int i = 0; i < fieldArray.length; i++) {
@@ -52,5 +52,21 @@ public class Message {
 	
 	public String getBody() {
 		return body;
+	}
+	
+	public String getVersion() {
+		return fields.get(Field.VERSION);
+	}
+	
+	public String getFileId() {
+		return fields.get(Field.FILE_ID);
+	}
+	
+	public int getChunkNo() {
+		return Integer.parseInt(fields.get(Field.CHUNK_NO));
+	}
+	
+	public int getReplicationDeg() {
+		return Integer.parseInt(fields.get(Field.REPLICATION_DEGREE));
 	}
 }
