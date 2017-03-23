@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import channels.RMIservice;
 import chunk.Chunk;
+import filesystem.FileSystem;
 
 public class TestApp {
 	
@@ -98,7 +99,7 @@ private static boolean validCommand(String[] args, String[] request) {
 					return false;
 				
 				
-				if(!Utils.fileExist(args[OPND_1])){ //TODO not sure
+				if(!FileSystem.fileExist(args[OPND_1])){ //TODO not sure
 					System.out.println("File doesn't exits");
 					return false;
 				};			
@@ -110,7 +111,7 @@ private static boolean validCommand(String[] args, String[] request) {
 				if(n_args != 3)
 					return false;
 				
-				if(!Utils.fileExist(args[OPND_1])){ //TODO not sure
+				if(!FileSystem.fileExist(args[OPND_1])){ //TODO not sure
 					System.out.println("File doesn't exits");
 					return false;
 				};
