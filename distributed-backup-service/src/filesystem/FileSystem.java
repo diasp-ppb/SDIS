@@ -13,7 +13,7 @@ import chunk.Chunk;
 public class FileSystem {
 	
 	private final String  chunkDir = "data/chunks/";
-	private final String  files  ="data/files/";
+	private final String  filesDir  ="data/files/";
 	
 	public  FileSystem () {
 		//Create the peer dir if they dont exists
@@ -25,8 +25,8 @@ public class FileSystem {
 			File chunks = new File(chunkDir);
 			chunks.mkdir();
 		}
-		if(!directoryExist(files)){
-			File file = new File(files);
+		if(!directoryExist(filesDir)){
+			File file = new File(filesDir);
 			file.mkdir();
 		}
 	}
@@ -46,7 +46,7 @@ public class FileSystem {
 		
 		File file = new File(path);
 		
-		FileInputStream in = new FileInputStream(files);
+		FileInputStream in = new FileInputStream(file);
 		
 		byte[] data =  new byte[(int) file.length()]; 
 		
@@ -58,14 +58,13 @@ public class FileSystem {
 			System.out.println("Load file failed: " + path);
 			e.printStackTrace();
 		}
-		;
 		return data;
 	}
 	
 	void saveFile(String name,byte[] data) {
 		
-		if(!fileExist(files+name)){
-			File newfile = new File(files+name);
+		if(!fileExist(filesDir + name)){
+			File newfile = new File(filesDir + name);
 			try {
 				newfile.createNewFile();
 			} catch (IOException e) {
@@ -74,7 +73,7 @@ public class FileSystem {
 		}
 		
 		try {
-			FileOutputStream out = new FileOutputStream(files+name);
+			FileOutputStream out = new FileOutputStream(filesDir + name);
 			out.write(data);
 			out.close();
 		} catch (FileNotFoundException e) {
@@ -87,17 +86,54 @@ public class FileSystem {
 		
 	}
 	
-	void deleteFile(){
-		
+	void deleteFile(String file){
+		File erase = new File (filesDir + file);
+		try{
+		erase.delete();
+		} catch(Exception e){
+			System.out.println("Unable to delete File: " + file);
+		}
 	}
 	
-	Chunk loadChunk(String chunkID){
+	byte[] loadChunk(String chunkID) throws FileNotFoundException{
+		File load = new File(chunkDir + chunkID);
 		
-		return null;
+		FileInputStream in = new FileInputStream(load);
+		byte[] data = new byte[(int) load.length()];
+		
+		try {
+			in.read(data);
+			in.close();
+		} catch (IOException e) {
+			System.out.println("Load file failed: " + chunkID);
+			e.printStackTrace();
+		}
+		return data;
 	}
-	
-	void Savechunk(Chunk ck){
 		
+	
+	void saveChunk(Chunk ck){
+		//TODO ver questao dos nome do ficheiro
+		if(!fileExist(chunkDir + ck.getChunkNo())){
+			File newfile = new File(chunkDir + ck.getChunkNo());
+			try {
+				newfile.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		try {
+			
+			FileOutputStream out = new FileOutputStream(chunkDir +ck.getChunkNo());
+			out.write(ck.getFileData());
+			out.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	void Deletechunk(String chunkID){
