@@ -1,6 +1,7 @@
 package utils;
 
 import java.net.DatagramPacket;
+import java.nio.charset.StandardCharsets;
 import java.util.EnumMap;
 
 public class Message {
@@ -23,6 +24,20 @@ public class Message {
 	public Message(String header, String body) {
 		this.header = header;
 		this.body = body;
+	}
+	
+	public Message(String fieldArray[], byte[] body) {
+		for (int i = 0; i < fieldArray.length; i++) {
+			fields.put(Field.values()[i], fieldArray[i]);
+		}
+		
+		this.body = new String(body, StandardCharsets.US_ASCII);
+	}
+	
+	public Message(String fieldArray[]) {
+		for (int i = 0; i < fieldArray.length; i++) {
+			fields.put(Field.values()[i], fieldArray[i]);
+		}
 	}
 	
 	public Message(DatagramPacket packet) {
@@ -68,5 +83,9 @@ public class Message {
 	
 	public int getReplicationDeg() {
 		return Integer.parseInt(fields.get(Field.REPLICATION_DEGREE));
+	}
+	
+	public byte[] getData() {
+		return this.body.getBytes(StandardCharsets.US_ASCII);
 	}
 }
