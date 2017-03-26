@@ -66,6 +66,10 @@ public class Peer implements RMIservice {
 		mcChannel = new ControlChannel(mcAddress, mcPort);
 		mdbChannel = new BackupChannel(mdbAddress, mdbPort);
 		mdrChannel = new RestoreChannel(mdrAddress, mdrPort);
+		
+		new Thread(mcChannel).start();
+		new Thread(mdbChannel).start();
+		new Thread(mdrChannel).start();
 	}
 
 	public static void startRMIservice() {
