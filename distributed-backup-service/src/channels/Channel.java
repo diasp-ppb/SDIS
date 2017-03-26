@@ -8,12 +8,12 @@ import java.nio.charset.StandardCharsets;
 
 import utils.Message;
 
-public class Channel implements Runnable{
+public class Channel implements Runnable {
 	
 	private InetAddress address;
 	private int port;
 	
-	private MulticastSocket socket;
+	protected MulticastSocket socket;
 	
 	
 	

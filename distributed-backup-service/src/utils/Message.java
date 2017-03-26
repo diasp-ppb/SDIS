@@ -12,7 +12,7 @@ public class Message {
 	
 	private EnumMap<Field, String> fields;
 	
-	private enum Field {
+	public enum Field {
 		MESSAGE_TYPE,
 		VERSION,
 		SENDER_ID,
@@ -26,18 +26,14 @@ public class Message {
 		this.body = body;
 	}
 	
-	public Message(String fieldArray[], byte[] body) {
-		for (int i = 0; i < fieldArray.length; i++) {
-			fields.put(Field.values()[i], fieldArray[i]);
-		}
-		
+	public Message(EnumMap<Field, String> fields, byte[] body) {
+		this.fields = fields;
+		convertFieldsToHeader();
 		this.body = new String(body, StandardCharsets.US_ASCII);
 	}
 	
-	public Message(String fieldArray[]) {
-		for (int i = 0; i < fieldArray.length; i++) {
-			fields.put(Field.values()[i], fieldArray[i]);
-		}
+	public Message(EnumMap<Field, String> fields) {
+		this.fields = fields;	
 	}
 	
 	public Message(DatagramPacket packet) {
@@ -61,12 +57,28 @@ public class Message {
 		}
 	}
 	
+	private void convertFieldsToHeader() {
+		header = "";
+		
+		for(Field field : Field.values()) {
+	        String value = fields.get(field);
+	        
+	        if (value != null) {
+	        	header.concat(value);
+	        }
+		}
+	}
+	
 	public String getMsg() {
 		return msg;
 	}
 	
 	public String getBody() {
 		return body;
+	}
+	
+	public String getType() {
+		return fields.get(Field.MESSAGE_TYPE);
 	}
 	
 	public String getVersion() {

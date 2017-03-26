@@ -69,13 +69,18 @@ public class Peer implements RMIservice {
 	}
 
 	public static void startRMIservice() {
-		try {
-			Peer peer = new Peer();
-			RMIservice stub = (RMIservice) UnicastRemoteObject.exportObject(peer, 0);
-			Registry registry = LocateRegistry.getRegistry();
-			registry.rebind("HelloServer1", stub);
-		} catch (Exception e) {
-			e.printStackTrace();
+		boolean listening = true;
+
+		while (listening) {
+			try {
+				Peer peer = new Peer();
+				RMIservice stub = (RMIservice) UnicastRemoteObject.exportObject(peer, 0);
+				Registry registry = LocateRegistry.getRegistry();
+				registry.rebind("HelloServer1", stub);
+			} catch (Exception e) {
+				e.printStackTrace();
+				listening = false;
+			}
 		}
 	}
 
