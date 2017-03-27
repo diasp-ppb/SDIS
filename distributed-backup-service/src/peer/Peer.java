@@ -11,6 +11,7 @@ import channels.BackupChannel;
 import channels.ControlChannel;
 import channels.RMIservice;
 import channels.RestoreChannel;
+import filesystem.FileSystem;
 
 public class Peer implements RMIservice {
 
@@ -30,6 +31,8 @@ public class Peer implements RMIservice {
 	private ControlChannel mcChannel;
 	private BackupChannel mdbChannel;
 	private RestoreChannel mdrChannel;
+	
+	private FileSystem fs;
 
 	public static void main(String [] args) throws UnknownHostException {
 		try {
@@ -48,8 +51,6 @@ public class Peer implements RMIservice {
 	}
 
 	public boolean validateArgs(String [] args) throws UnknownHostException {
-		// args_order -> MC MDB MDR PROTOCOL_VERSION SERVER_ID SERVICE_ACCESS_POINT
-		//                                                     ^-> ver section 5.2 remote obj name?
 		if (args.length != 6) {
 			return false;
 		}
@@ -91,7 +92,15 @@ public class Peer implements RMIservice {
 			}
 		}
 	}
-
+	
+	public String getId() {
+		return serverId;
+	}
+	
+	public FileSystem getFs() {
+		return fs;
+	}
+	
 	@Override
 	public String sayHello() throws RemoteException {
 		return  "Hello, world!";

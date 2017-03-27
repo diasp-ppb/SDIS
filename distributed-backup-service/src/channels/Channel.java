@@ -13,13 +13,10 @@ public class Channel implements Runnable {
 	
 	private InetAddress address;
 	private int port;
-	private Peer peer;
-	
+	protected Peer peer;
 	protected MulticastSocket socket;
 	
-	
-	
-	public Channel(Peer peer, InetAddress address , int port){
+	public Channel(Peer peer, InetAddress address, int port) {
 		this.address = address;
 		this.port = port;
 		this.peer = peer;
@@ -31,15 +28,11 @@ public class Channel implements Runnable {
 			System.out.println("Channel: socket creation failed");
 			e.printStackTrace();
 		}
-		
 	}
-
-
 
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		
 	}
 	
 	public void sendMessage(Message m) {

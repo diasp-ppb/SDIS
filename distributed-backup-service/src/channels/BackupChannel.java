@@ -24,13 +24,13 @@ public class BackupChannel extends Channel {
 			DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
 			try {
-				this.socket.receive(packet);
+				socket.receive(packet);
 			}
 			catch (IOException e) {
 				e.printStackTrace();
 			}
 			
-			new Thread(new BackupProtocol(packet)).start();
+			new Thread(new BackupProtocol(peer, packet)).start();
 		}
 	}
 

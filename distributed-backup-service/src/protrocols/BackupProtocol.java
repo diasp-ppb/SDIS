@@ -5,22 +5,22 @@ import java.util.EnumMap;
 
 import chunk.Chunk;
 import filesystem.FileSystem;
+import peer.Peer;
 import utils.Message;
 import utils.Message.Field;
 
 public class BackupProtocol implements Runnable {
-	private FileSystem fs;
+	private Peer peer;
 	private DatagramPacket packet;
 	
-	public BackupProtocol(DatagramPacket packet) {	
+	public BackupProtocol(Peer peer, DatagramPacket packet) {	
 		this.packet = packet;
-		fs = new FileSystem();
 	}
 	
 	private void saveChunk(Message msg) {
 		Chunk chunk = new Chunk(msg.getChunkNo(), msg.getFileId(), msg.getReplicationDeg(), msg.getData());
 		
-		fs.saveChunk(chunk);
+		peer.getFs().saveChunk(chunk);
 	}
 	
 	private void sendStoredMessage(Message originalMsg) {
@@ -28,7 +28,7 @@ public class BackupProtocol implements Runnable {
 		
 		messageHeader.put(Field.MESSAGE_TYPE, "STORED");
 		messageHeader.put(Field.VERSION, originalMsg.getVersion());
-		// messageHeader.put(Field.SENDER_ID, TODO GET SENDER ID);
+		messageHeader.put(Field.SENDER_ID, peer.getId());
 		messageHeader.put(Field.FILE_ID, originalMsg.getFileId());
 		messageHeader.put(Field.CHUNK_NO, Integer.toString(originalMsg.getChunkNo()));
 		
