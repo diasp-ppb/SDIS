@@ -135,10 +135,13 @@ public class FileSystem {
 	}
 
 	void Deletechunk(String chunkID){
-
+		if(fileExist(chunkDir+ chunkID)) {
+			File erase = new File(chunkDir + chunkID);
+			erase.delete();
+		}
 	}
 
-	public static ArrayList<Chunk> splitFile( String filepath , int repDegree) throws IOException {	
+	public  ArrayList<Chunk> splitFile( String filepath , int repDegree) throws IOException {	
 		ArrayList<Chunk> result = new ArrayList<Chunk>();			
 		int chunkCount = 0;
 		byte buffer[] = new byte[Chunk.MAX_LENGTH];

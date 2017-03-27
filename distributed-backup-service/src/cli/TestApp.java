@@ -2,6 +2,8 @@ package cli;
 
 import utils.*;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
@@ -18,11 +20,27 @@ public class TestApp {
 	private static final int OPND_2 = 3;
 	private static final int MAX_ARGS_REQUEST = 3; 
 	
-	public static void main( String [] args){
+	public static void main( String [] args) {
 		
+		
+		int a = 4;
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(a);
+		
+		String b = sb.toString();
+		
+		System.out.println(b);
+		byte [] teste = b.getBytes(StandardCharsets.US_ASCII);
+		
+		System.out.println(teste[0] + " " + teste.length);
+		
+		
+		String c = new String(teste);
+		System.out.println(c);
 		
 		//TEMP
-		System.out.println(args[PEER_AP]);
+		/*System.out.println(args[PEER_AP]);
 		System.out.println(args[COMMAND]);
 		System.out.println(args[OPND_1]);
 		System.out.println(args[OPND_2]);
@@ -137,3 +155,5 @@ private static boolean validCommand(String[] args, String[] request) {
 	return true;
 	}
 }
+
+
