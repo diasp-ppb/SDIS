@@ -2,10 +2,12 @@ package channels;
 
 import java.net.InetAddress;
 
+import peer.Peer;
+
 public class ControlChannel extends Channel{
 
-	public ControlChannel(InetAddress address, int port) {
-		super(address, port);
+	public ControlChannel(Peer peer, InetAddress address, int port) {
+		super(peer, address, port);
 		// TODO Auto-generated constructor stub
 	}
 	

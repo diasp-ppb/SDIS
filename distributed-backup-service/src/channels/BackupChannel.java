@@ -4,12 +4,13 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 
+import peer.Peer;
 import protrocols.BackupProtocol;
 
 public class BackupChannel extends Channel {
 	
-	public BackupChannel(InetAddress address, int port) {
-		super(address, port);
+	public BackupChannel(Peer peer, InetAddress address, int port) {
+		super(peer, address, port);
 	}
 	
 	

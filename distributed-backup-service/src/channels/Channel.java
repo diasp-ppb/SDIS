@@ -6,20 +6,23 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.nio.charset.StandardCharsets;
 
+import peer.Peer;
 import utils.Message;
 
 public class Channel implements Runnable {
 	
 	private InetAddress address;
 	private int port;
+	private Peer peer;
 	
 	protected MulticastSocket socket;
 	
 	
 	
-	public Channel(InetAddress address , int port){
+	public Channel(Peer peer, InetAddress address , int port){
 		this.address = address;
 		this.port = port;
+		this.peer = peer;
 		
 		try {
 			socket = new MulticastSocket(port);
