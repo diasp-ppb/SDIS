@@ -2,6 +2,7 @@ package cli;
 
 import utils.*;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.rmi.registry.LocateRegistry;
@@ -22,22 +23,6 @@ public class TestApp {
 	
 	public static void main( String [] args) {
 		
-		
-		int a = 4;
-		
-		StringBuilder sb = new StringBuilder();
-		sb.append(a);
-		
-		String b = sb.toString();
-		
-		System.out.println(b);
-		byte [] teste = b.getBytes(StandardCharsets.US_ASCII);
-		
-		System.out.println(teste[0] + " " + teste.length);
-		
-		
-		String c = new String(teste);
-		System.out.println(c);
 		
 		//TEMP
 		/*System.out.println(args[PEER_AP]);
@@ -68,19 +53,22 @@ public class TestApp {
 		
 		
 		// RMI TO TEST SERVER SIDE
-		/*
+		
+		 FileSystem fs  = new FileSystem();
+		 
+			
 		 try {
 			 	System.out.println(args[PEER_AP]);
 	            Registry registry = LocateRegistry.getRegistry();
 	            RMIservice stub = (RMIservice) registry.lookup("HelloServer1");
-	            String response = stub.sayHello();
-	            System.out.println("response: " + response);
+	            stub.backup(args[COMMAND], 1);
+	         //   System.out.println("response: " + response);
 	        } catch (Exception e) {
 	            System.err.println("Client exception: " + e.toString());
 	            e.printStackTrace();
 	        }
 	        
-	    */
+	    
 		
 		// TO TEST MESSAGE SPLIT
 	//	Message t = new Message("asdasdasd \r\n\r\n asdasdadasda"," ");

@@ -1,5 +1,6 @@
 package peer;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -124,8 +125,8 @@ public class Peer implements RMIservice {
 	}
 
 	@Override
-	public void backup() throws RemoteException {
-		new Thread(new BackupInitiator(this /** argumentos todos do putchunk **/)).start();
+	public void backup(String path, int replicationDegree) throws RemoteException {
+		new Thread(new BackupInitiator(this, path, replicationDegree)).start();
 	}
 
 	@Override
