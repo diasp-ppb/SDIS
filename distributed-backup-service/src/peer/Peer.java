@@ -1,7 +1,10 @@
 package peer;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -12,13 +15,15 @@ import channels.ControlChannel;
 import channels.RMIservice;
 import channels.RestoreChannel;
 import filesystem.FileSystem;
+import protrocols.BackupInitiator;
+import utils.Message;
 
 public class Peer implements RMIservice {
 
 	private String RMIobjName;
 
 	private int protocolVersion;
-	private String serverId;
+	private String peerId;
 	private String accessPoint;
 
 	private InetAddress mcAddress;
@@ -56,7 +61,7 @@ public class Peer implements RMIservice {
 		}
 
 		protocolVersion = Integer.parseInt(args[0]);
-		serverId = args[1];
+		peerId = args[1];
 		accessPoint = args[2];
 		mcAddress = InetAddress.getByName(args[3]);
 		mcPort = Integer.parseInt(args[4]);
@@ -85,7 +90,7 @@ public class Peer implements RMIservice {
 			try {
 				RMIservice stub = (RMIservice) UnicastRemoteObject.exportObject(this, 0);
 				Registry registry = LocateRegistry.getRegistry();
-				registry.rebind("HelloServer1", stub);
+				registry.rebind(peerId, stub);
 			} catch (Exception e) {
 				e.printStackTrace();
 				listening = false;
@@ -94,11 +99,23 @@ public class Peer implements RMIservice {
 	}
 	
 	public String getId() {
-		return serverId;
+		return peerId;
 	}
 	
 	public FileSystem getFs() {
 		return fs;
+	}
+	
+	public BackupChannel getBackupChannel() {
+		return mdbChannel;
+	}
+	
+	public RestoreChannel getRestoreChannel() {
+		return mdrChannel;
+	}
+	
+	public ControlChannel getControlChannel() {
+		return mcChannel;
 	}
 	
 	@Override
@@ -108,8 +125,7 @@ public class Peer implements RMIservice {
 
 	@Override
 	public void backup() throws RemoteException {
-		// TODO Auto-generated method stub
-
+		new Thread(new BackupInitiator(this /** argumentos todos do putchunk **/)).start();
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package utils;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumMap;
@@ -9,6 +10,8 @@ public class Message {
 	private String msg;
 	private String header;
 	private String body;
+	
+	private DatagramPacket packet;
 	
 	private EnumMap<Field, String> fields;
 	
@@ -33,7 +36,9 @@ public class Message {
 	}
 	
 	public Message(EnumMap<Field, String> fields) {
-		this.fields = fields;	
+		this.fields = fields;
+		convertFieldsToHeader();
+		msg = header;
 	}
 	
 	public Message(DatagramPacket packet) {
@@ -98,6 +103,10 @@ public class Message {
 	}
 	
 	public byte[] getData() {
-		return this.body.getBytes(StandardCharsets.US_ASCII);
+		return body.getBytes(StandardCharsets.US_ASCII);
+	}
+	
+	public DatagramPacket getPacket() {
+		return packet;
 	}
 }

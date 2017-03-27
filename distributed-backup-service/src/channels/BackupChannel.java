@@ -18,7 +18,7 @@ public class BackupChannel extends Channel {
 	public void run() {
 		// TODO Auto-generated method stub
 		
-		byte[] buf = new byte[64000];
+		byte[] buf = new byte[65000];
 		
 		while(true) {
 			DatagramPacket packet = new DatagramPacket(buf, buf.length);

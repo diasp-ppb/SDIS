@@ -4,7 +4,6 @@ import java.net.DatagramPacket;
 import java.util.EnumMap;
 
 import chunk.Chunk;
-import filesystem.FileSystem;
 import peer.Peer;
 import utils.Message;
 import utils.Message.Field;
@@ -23,7 +22,7 @@ public class BackupProtocol implements Runnable {
 		peer.getFs().saveChunk(chunk);
 	}
 	
-	private void sendStoredMessage(Message originalMsg) {
+	private Message buildStoredMessage(Message originalMsg) {
 		EnumMap<Field, String> messageHeader = new EnumMap<Field, String>(Field.class);
 		
 		messageHeader.put(Field.MESSAGE_TYPE, "STORED");
@@ -32,7 +31,7 @@ public class BackupProtocol implements Runnable {
 		messageHeader.put(Field.FILE_ID, originalMsg.getFileId());
 		messageHeader.put(Field.CHUNK_NO, Integer.toString(originalMsg.getChunkNo()));
 		
-		Message msg = new Message(messageHeader);
+		return new Message(messageHeader);
 	}
 	
 	private void handlePacket() {
@@ -40,6 +39,8 @@ public class BackupProtocol implements Runnable {
 		
 		if (msg.getType().equals("PUTCHUNK")) {
 			saveChunk(msg);
+			Message response = buildStoredMessage(msg);
+			peer.getControlChannel().sendMessage(response);
 		}
 	}
 
