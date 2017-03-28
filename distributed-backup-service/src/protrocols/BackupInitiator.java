@@ -41,7 +41,7 @@ public class BackupInitiator implements Runnable {
 				messageHeader.put(Field.VERSION, peer.getProtocolVersion());
 				messageHeader.put(Field.SENDER_ID, peer.getId());
 				messageHeader.put(Field.FILE_ID, new String(info.hash()));
-				
+				messageHeader.put(Field.REPLICATION_DEGREE, Integer.toString(replicationDegree));
 				
 				for(int i = 0; i < splited.size(); i++ ){
 					messageHeader.put(Field.CHUNK_NO, Integer.toString(splited.get(i).getChunkNo()));

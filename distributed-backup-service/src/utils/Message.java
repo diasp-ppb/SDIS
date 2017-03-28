@@ -8,7 +8,7 @@ public class Message {
 	
 	private String msg;
 	private String header;
-	private String body;
+	private byte[] body;
 	
 	private DatagramPacket packet;
 	
@@ -23,7 +23,7 @@ public class Message {
 		REPLICATION_DEGREE
 	}
 	
-	public Message(String header, String body) {
+	public Message(String header, byte[] body) {
 		this.header = header;
 		this.body = body;
 	}
@@ -33,7 +33,7 @@ public class Message {
 		
 		convertFieldsToHeader();
 		
-		this.body = new String(body, StandardCharsets.US_ASCII);
+		this.body = body;
 		this.msg = this.header + "\r\n\r\n" + this.body;
 		System.out.println(msg.length());
 	}
@@ -49,9 +49,9 @@ public class Message {
 		
 		String[] parts = msg.split("\r\n\r\n", 2);
 		
-		System.out.println("msg parts: " + parts.length);
+	
 		header = parts[0];
-		body = parts[1];
+		body = parts[1].getBytes();
 		
 		fields = new EnumMap<Field, String>(Field.class);
 		
@@ -90,10 +90,6 @@ public class Message {
 		return msg;
 	}
 	
-	public String getBody() {
-		return body;
-	}
-	
 	public String getType() {
 		return fields.get(Field.MESSAGE_TYPE);
 	}
@@ -115,7 +111,8 @@ public class Message {
 	}
 	
 	public byte[] getData() {
-		return body.getBytes(StandardCharsets.US_ASCII);
+		System.out.println("BODY SIZE : " + body.length);
+		return body;
 	}
 	
 	public DatagramPacket getPacket() {

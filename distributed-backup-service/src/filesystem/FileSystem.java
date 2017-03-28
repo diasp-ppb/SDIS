@@ -113,10 +113,11 @@ public class FileSystem {
 
 	public void saveChunk(Chunk ck) {
 		//TODO ver questao dos nome do ficheiro
-		
+
 		String path = chunkDir + ck.getFileId() + ck.getChunkNo();
-		if(!fileExist(path)) {
-			File newfile = new File(path);
+		System.out.println(path);
+		File newfile = new File(path);
+		if(!fileExist(path)) {	
 			try {
 				newfile.createNewFile();
 			} catch (IOException e) {
@@ -125,7 +126,7 @@ public class FileSystem {
 		}
 		
 		try {
-			FileOutputStream out = new FileOutputStream(chunkDir +ck.getChunkNo());
+			FileOutputStream out = new FileOutputStream(newfile);
 			out.write(ck.getFileData());
 			out.close();
 		} catch (FileNotFoundException e) {
