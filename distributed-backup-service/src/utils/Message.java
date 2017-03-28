@@ -47,7 +47,7 @@ public class Message {
 	public Message(DatagramPacket packet) {
 		msg = new String(packet.getData(), 0, packet.getLength());
 		
-		String[] parts = msg.split("\r\n\r\n",2);
+		String[] parts = msg.split("\r\n\r\n", 2);
 		
 		System.out.println("msg parts: " + parts.length);
 		header = parts[0];
@@ -73,11 +73,15 @@ public class Message {
 	private void convertFieldsToHeader() {
 		header = "";
 		
-		for(Field field : Field.values()) {
+		for (Field field : Field.values()) {
 	        String value = fields.get(field);
 	        
 	        if (value != null) {
-	        	header += " "+ value;
+		        if (field == Field.MESSAGE_TYPE) {
+		        	header += value;
+		        }
+		        
+	        	header += " " + value;
 	        }
 		}
 	}
