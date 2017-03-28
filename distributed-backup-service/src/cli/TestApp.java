@@ -61,7 +61,7 @@ public class TestApp {
 			 	System.out.println(args[PEER_AP]);
 	            Registry registry = LocateRegistry.getRegistry();
 	            RMIservice stub = (RMIservice) registry.lookup("helloserver1");
-	            stub.backup(args[COMMAND], 1);
+	            stub.backup(args[OPND_1], 1);
 	         //   System.out.println("response: " + response);
 	        } catch (Exception e) {
 	            System.err.println("Client exception: " + e.toString());
@@ -103,12 +103,7 @@ private static boolean validCommand(String[] args, String[] request) {
 		case "BACKUP":
 				if(n_args != 4 || !(Utils.isInteger(args[OPND_2])))
 					return false;
-				
-				
-				if(!FileSystem.fileExist(args[OPND_1])){ //TODO not sure
-					System.out.println("File doesn't exits");
-					return false;
-				};			
+						
 				request[1] = args[OPND_1];
 				request[2] = args[OPND_2];
 			break;
@@ -116,11 +111,6 @@ private static boolean validCommand(String[] args, String[] request) {
 		case "DELETE":
 				if(n_args != 3)
 					return false;
-				
-				if(!FileSystem.fileExist(args[OPND_1])){ //TODO not sure
-					System.out.println("File doesn't exits");
-					return false;
-				};
 				request[1] = args[OPND_1];
 			break;
 			

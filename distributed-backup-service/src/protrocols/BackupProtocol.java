@@ -37,11 +37,14 @@ public class BackupProtocol implements Runnable {
 	private void handlePacket() {
 		Message msg = new Message(packet);
 		
+		System.out.println(msg.getType());
 		if (msg.getType().equals("PUTCHUNK")) {
 			saveChunk(msg);
 			Message response = buildStoredMessage(msg);
+			System.out.println("OUT" + response.toString());
 			peer.getControlChannel().sendMessage(response);
 		}
+		System.out.println("active");
 	}
 
 	@Override

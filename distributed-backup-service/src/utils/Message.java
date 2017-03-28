@@ -1,6 +1,5 @@
 package utils;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumMap;
@@ -31,8 +30,12 @@ public class Message {
 	
 	public Message(EnumMap<Field, String> fields, byte[] body) {
 		this.fields = fields;
+		
 		convertFieldsToHeader();
+		
 		this.body = new String(body, StandardCharsets.US_ASCII);
+		this.msg = this.header + "\r\n\r\n" + this.body;
+		System.out.println(msg.length());
 	}
 	
 	public Message(EnumMap<Field, String> fields) {
@@ -44,14 +47,19 @@ public class Message {
 	public Message(DatagramPacket packet) {
 		msg = new String(packet.getData(), 0, packet.getLength());
 		
-		String[] parts = msg.split("[\\r\\n]+");
+		String[] parts = msg.split("\r\n\r\n",2);
 		
+		System.out.println("msg parts: " + parts.length);
 		header = parts[0];
 		body = parts[1];
 		
 		fields = new EnumMap<Field, String>(Field.class);
 		
 		parseHeaderFields();
+		
+		System.out.println("HEADER :" + header) ;
+		System.out.println("fields :" + fields) ;
+		
 	}
 	
 	private void parseHeaderFields() {
@@ -69,7 +77,7 @@ public class Message {
 	        String value = fields.get(field);
 	        
 	        if (value != null) {
-	        	header.concat(value);
+	        	header += " "+ value;
 	        }
 		}
 	}
@@ -108,5 +116,10 @@ public class Message {
 	
 	public DatagramPacket getPacket() {
 		return packet;
+	}
+	
+	public  String toString() {
+		return header;
+		
 	}
 }

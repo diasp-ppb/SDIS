@@ -53,8 +53,13 @@ public class Peer implements RMIservice {
 		if (!validateArgs(args)) {
 			throw new InvalidArgumentsException("Invalid peer arguments.");
 		}
+		fs = new FileSystem();
 	}
 
+	public String getProtocolVersion() {
+		return protocolVersion;
+	}
+	
 	public boolean validateArgs(String [] args) throws UnknownHostException {
 		if (args.length != 9) {
 			return false;
