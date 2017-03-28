@@ -21,10 +21,7 @@ import protrocols.BackupInitiator;
 import utils.Message;
 
 public class Peer implements RMIservice {
-
-	private String RMIobjName;
-
-	private float protocolVersion;
+	private String protocolVersion;
 	private String peerId;
 	private String accessPoint;
 
@@ -59,13 +56,11 @@ public class Peer implements RMIservice {
 	}
 
 	public boolean validateArgs(String [] args) throws UnknownHostException {
-		
-		System.out.println(args.length);
 		if (args.length != 9) {
 			return false;
 		}
 
-		protocolVersion = Float.parseFloat(args[0]);
+		protocolVersion = args[0];
 		peerId = args[1];
 		accessPoint = args[2];
 		mcAddress = InetAddress.getByName(args[3]);
@@ -89,17 +84,12 @@ public class Peer implements RMIservice {
 	}
 
 	public void startRMIservice() {
-		boolean listening = true;
-
-		while (listening) {
-			try {
-				RMIservice stub = (RMIservice) UnicastRemoteObject.exportObject(this, 0);
-				Registry registry = LocateRegistry.getRegistry();
-				registry.rebind(peerId, stub);
-			} catch (Exception e) {
-				e.printStackTrace();
-				listening = false;
-			}
+		try {
+			RMIservice stub = (RMIservice) UnicastRemoteObject.exportObject(this, 0);
+			Registry registry = LocateRegistry.getRegistry();
+			registry.rebind(accessPoint, stub);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -130,6 +120,7 @@ public class Peer implements RMIservice {
 
 	@Override
 	public void backup(String path, int replicationDegree) throws RemoteException {
+		System.out.println("Called backup with path: "  + path + " and repDegree: " + replicationDegree + ".");
 		new Thread(new BackupInitiator(this, path, replicationDegree)).start();
 	}
 

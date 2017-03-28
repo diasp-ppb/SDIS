@@ -60,7 +60,7 @@ public class TestApp {
 		 try {
 			 	System.out.println(args[PEER_AP]);
 	            Registry registry = LocateRegistry.getRegistry();
-	            RMIservice stub = (RMIservice) registry.lookup("HelloServer1");
+	            RMIservice stub = (RMIservice) registry.lookup("helloserver1");
 	            stub.backup(args[COMMAND], 1);
 	         //   System.out.println("response: " + response);
 	        } catch (Exception e) {
