@@ -79,9 +79,9 @@ public class Message {
 	        if (value != null) {
 		        if (field == Field.MESSAGE_TYPE) {
 		        	header += value;
+		        } else {
+		        	header += " " + value;
 		        }
-		        
-	        	header += " " + value;
 	        }
 		}
 	}
