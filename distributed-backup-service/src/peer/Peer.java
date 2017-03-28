@@ -15,6 +15,7 @@ import channels.BackupChannel;
 import channels.ControlChannel;
 import channels.RMIservice;
 import channels.RestoreChannel;
+import filesystem.Database;
 import filesystem.FileSystem;
 import protrocols.BackupInitiator;
 import utils.Message;
@@ -23,7 +24,7 @@ public class Peer implements RMIservice {
 
 	private String RMIobjName;
 
-	private int protocolVersion;
+	private float protocolVersion;
 	private String peerId;
 	private String accessPoint;
 
@@ -39,6 +40,7 @@ public class Peer implements RMIservice {
 	private RestoreChannel mdrChannel;
 	
 	private FileSystem fs;
+	private Database db; //TODO INICIALIZAR E CRIAR FUNÇOES DE INSERÇAO/UPDATE
 
 	public static void main(String [] args) throws UnknownHostException {
 		try {
@@ -57,11 +59,13 @@ public class Peer implements RMIservice {
 	}
 
 	public boolean validateArgs(String [] args) throws UnknownHostException {
-		if (args.length != 6) {
+		
+		System.out.println(args.length);
+		if (args.length != 9) {
 			return false;
 		}
 
-		protocolVersion = Integer.parseInt(args[0]);
+		protocolVersion = Float.parseFloat(args[0]);
 		peerId = args[1];
 		accessPoint = args[2];
 		mcAddress = InetAddress.getByName(args[3]);

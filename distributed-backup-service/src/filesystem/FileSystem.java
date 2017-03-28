@@ -141,7 +141,7 @@ public class FileSystem {
 		}
 	}
 
-	public  ArrayList<Chunk> splitFile( String filepath , int repDegree) throws IOException {	
+	public  ArrayList<Chunk> splitFile( String filepath ,byte[] filehash, int repDegree) throws IOException {	
 		ArrayList<Chunk> result = new ArrayList<Chunk>();			
 		int chunkCount = 0;
 		byte buffer[] = new byte[Chunk.MAX_LENGTH];

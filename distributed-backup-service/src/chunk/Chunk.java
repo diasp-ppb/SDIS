@@ -1,5 +1,8 @@
 package chunk;
 
+import java.security.NoSuchAlgorithmException;
+
+import utils.Utils;
 
 //TODO COMO IDENTIFICAR OS PACOTES
 public class Chunk {
@@ -40,5 +43,9 @@ public class Chunk {
 	@Override
 	public String toString() {
 		return new String("CHUNK: RepDregee="+replicationDegree+" chunkNo:"+ chunkNo + "\n FileID:" + fileId + " DataSize:"+fileData.length);
+	}
+	
+	public byte[] hash() throws NoSuchAlgorithmException{
+		return Utils.sha256(fileId+""+chunkNo);
 	}
 }
