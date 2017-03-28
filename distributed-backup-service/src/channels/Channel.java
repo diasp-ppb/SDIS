@@ -36,8 +36,8 @@ public class Channel implements Runnable {
 	}
 	
 	public void sendMessage(Message m) {
-		byte[] msg = m.getMsg().getBytes(StandardCharsets.US_ASCII);
-		DatagramPacket packet = new DatagramPacket(msg, msg.length, address, port);
+		
+		DatagramPacket packet = new DatagramPacket(m.getMsg(),m.getMsg().length, address, port);
 		try {
 			socket.send(packet);
 		} catch (IOException e) {

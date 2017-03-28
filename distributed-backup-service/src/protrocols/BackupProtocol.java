@@ -14,6 +14,7 @@ public class BackupProtocol implements Runnable {
 	
 	public BackupProtocol(Peer peer, DatagramPacket packet) {	
 		this.packet = packet;
+		this.peer = peer;
 	}
 	
 	private void saveChunk(Message msg) {
@@ -35,14 +36,21 @@ public class BackupProtocol implements Runnable {
 	}
 	
 	private void handlePacket() {
-		Message msg = new Message(packet);
 		
-		System.out.println(msg.getType());
+		Message msg = new Message(packet);
+		System.out.println("HANDLER BACKUP " + msg.getMsg().length + " header Size:" + msg.toString().length());
+		System.out.println("ChunkNo:" + msg.getChunkNo() );
 		if (msg.getType().equals("PUTCHUNK")) {
 			saveChunk(msg);
 			Message response = buildStoredMessage(msg);
-			System.out.println("OUT" + response.toString());
-			peer.getControlChannel().sendMessage(response);
+			
+			System.out.println("OUT " + response.toString());
+			try {
+				Thread.sleep(400);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			sendMessage(response);
 		}
 		System.out.println("active");
 	}
@@ -50,5 +58,9 @@ public class BackupProtocol implements Runnable {
 	@Override
 	public void run() {
 		handlePacket();
+	}
+	
+	private synchronized void sendMessage(Message response)  {
+		peer.getControlChannel().sendMessage(response);
 	}
 }

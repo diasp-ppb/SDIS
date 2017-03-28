@@ -54,6 +54,7 @@ public class Peer implements RMIservice {
 			throw new InvalidArgumentsException("Invalid peer arguments.");
 		}
 		fs = new FileSystem();
+		db = new Database();
 	}
 
 	public String getProtocolVersion() {

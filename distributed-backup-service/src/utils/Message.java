@@ -1,12 +1,15 @@
 package utils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.EnumMap;
 
 public class Message {
 	
-	private String msg;
+	private byte[] msg;
 	private String header;
 	private byte[] body;
 	
@@ -34,31 +37,46 @@ public class Message {
 		convertFieldsToHeader();
 		
 		this.body = body;
-		this.msg = this.header + "\r\n\r\n" + this.body;
-		System.out.println(msg.length());
+		ByteArrayOutputStream builder = new ByteArrayOutputStream();
+		try {
+			builder.write(this.header.getBytes(StandardCharsets.US_ASCII));
+			builder.write(this.body);
+		} catch (IOException e) {
+			System.out.println("builder fail");
+			e.printStackTrace();
+		}
+		
+		
+		this.msg = builder.toByteArray();
+		
+	//	System.out.println("mesage fields|body body"+ body.length + " " + this.body.length);
 	}
 	
 	public Message(EnumMap<Field, String> fields) {
 		this.fields = fields;
 		convertFieldsToHeader();
-		msg = header;
+		msg = header.getBytes();
 	}
 	
 	public Message(DatagramPacket packet) {
-		msg = new String(packet.getData(), 0, packet.getLength());
+		msg = Arrays.copyOf(packet.getData(), packet.getLength());
 		
-		String[] parts = msg.split("\r\n\r\n", 2);
+		
+		
+		String copy = new String(packet.getData(), packet.getOffset(), packet.getLength());
+		String[] parts = copy.split("\r\n\r\n", 2);
 		
 	
 		header = parts[0];
-		body = parts[1].getBytes();
+		body = parts[1].getBytes(StandardCharsets.US_ASCII);
 		
+	//	System.out.println("packet constructor msg size: " + msg.length + " header Size:" + header.length());
 		fields = new EnumMap<Field, String>(Field.class);
 		
 		parseHeaderFields();
 		
-		System.out.println("HEADER :" + header) ;
-		System.out.println("fields :" + fields) ;
+	//	System.out.println("HEADER :" + header) ;
+	//	System.out.println("fields :" + fields) ;
 		
 	}
 	
@@ -84,9 +102,10 @@ public class Message {
 		        }
 	        }
 		}
+		header += "\r\n\r\n";
 	}
 	
-	public String getMsg() {
+	public byte[] getMsg() {
 		return msg;
 	}
 	
@@ -111,7 +130,6 @@ public class Message {
 	}
 	
 	public byte[] getData() {
-		System.out.println("BODY SIZE : " + body.length);
 		return body;
 	}
 	

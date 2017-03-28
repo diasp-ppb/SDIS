@@ -112,10 +112,7 @@ public class FileSystem {
 	}
 
 	public void saveChunk(Chunk ck) {
-		//TODO ver questao dos nome do ficheiro
-
 		String path = chunkDir + ck.getFileId() + ck.getChunkNo();
-		System.out.println(path);
 		File newfile = new File(path);
 		if(!fileExist(path)) {	
 			try {
@@ -162,18 +159,18 @@ public class FileSystem {
 				multipleSize = false;
 
 			result.add(new Chunk(chunkCount, new String(filehash), repDegree, Arrays.copyOf(buffer, eof)));
-			System.out.println(eof);
+			//System.out.println(eof);
 			eof = in.read(buffer);
 		}
 
-		System.out.println("MULIPLO: " + multipleSize);
+		//System.out.println("MULIPLO: " + multipleSize);
 
 		if(multipleSize) {
 			result.add(new Chunk(chunkCount, new String(filehash),repDegree,new byte[0]));
 		}
 
 		in.close();
-		System.out.println(result.size());
+		//System.out.println(result.size());
 		return result;
 	}
 }
