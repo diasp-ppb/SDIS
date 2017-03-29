@@ -1,31 +1,36 @@
-
-
 package protrocols;
 
 import java.io.FileNotFoundException;
 import java.net.DatagramPacket;
 import java.util.EnumMap;
 
-import chunk.Chunk;
 import peer.Peer;
 import utils.Message;
 import utils.Message.Field;
 
-public class  RestoreProtocol  implements Runnable {
+public class RestoreProtocol implements Runnable {
 	private Peer peer;
-	private Message msg;
+	private DatagramPacket packet;
 	
-	public RestoreProtocol(Peer peer, Message msg) {	
-		this.msg = msg;
+	public RestoreProtocol(Peer peer, DatagramPacket packet) {
+		this.packet = packet;
+		this.peer = peer;
 	}
 	
-	private void saveChunk(Message msg) {
-		Chunk chunk = new Chunk(msg.getChunkNo(), msg.getFileId(), msg.getReplicationDeg(), msg.getData());
+	private byte[] loadChunk(Message msg) {
+		String chunkId = msg.getFileId() + msg.getFileId();
+		byte[] chunk;
 		
-		peer.getFs().saveChunk(chunk);
+		try {
+			chunk = peer.getFs().loadChunk(chunkId);
+		} catch (FileNotFoundException e) {
+			chunk = null;
+		}
+		
+		return chunk;
 	}
 	
-	private Message buildStoredMessage(Message originalMsg) {
+	private Message buildChunkMessage(Message originalMsg, byte[] chunk) {
 		EnumMap<Field, String> messageHeader = new EnumMap<Field, String>(Field.class);
 		
 		messageHeader.put(Field.MESSAGE_TYPE, "CHUNK");
@@ -34,19 +39,14 @@ public class  RestoreProtocol  implements Runnable {
 		messageHeader.put(Field.FILE_ID, originalMsg.getFileId());
 		messageHeader.put(Field.CHUNK_NO, Integer.toString(originalMsg.getChunkNo()));
 		
-		return new Message(messageHeader);
+		return new Message(messageHeader, chunk);
 	}
 	
 	private void handlePacket() {
+		Message msg = new Message(packet);
+		byte[] chunk = loadChunk(msg);
 		
-		//TODO CHUNK ID
-		try {
-			byte[] chunkdata = peer.getFs().loadChunk("");
-			Message response = buildStoredMessage(msg);
-			peer.getControlChannel().sendMessage(response);
-		} catch (FileNotFoundException e) {
-			return;
-		}/* TODO */
+		Message chunkMessage = buildChunkMessage(msg, chunk);
 	}
 
 	@Override
