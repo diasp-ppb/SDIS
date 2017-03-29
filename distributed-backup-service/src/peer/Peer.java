@@ -18,6 +18,7 @@ import channels.RestoreChannel;
 import filesystem.Database;
 import filesystem.FileSystem;
 import protrocols.BackupInitiator;
+import protrocols.RestoreInitiator;
 import utils.Message;
 
 public class Peer implements RMIservice {
@@ -124,19 +125,15 @@ public class Peer implements RMIservice {
 	}
 	
 	@Override
-	public String sayHello() throws RemoteException {
-		return  "Hello, world!";
-	}
-
-	@Override
 	public void backup(String path, int replicationDegree) throws RemoteException {
 		System.out.println("Called backup with path: "  + path + " and repDegree: " + replicationDegree + ".");
 		new Thread(new BackupInitiator(this, path, replicationDegree)).start();
 	}
 
 	@Override
-	public void restore() throws RemoteException {
-		// TODO Auto-generated method stub
+	public void restore(String path) throws RemoteException {
+		System.out.println("Called restore with path: "  + path + ".");
+		new Thread(new RestoreInitiator(this, path)).start();
 
 	}
 

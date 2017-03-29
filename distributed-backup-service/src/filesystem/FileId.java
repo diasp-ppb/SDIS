@@ -74,4 +74,8 @@ public class FileId {
 		this.chunkNo = chunkNo;
 	}
 	
+	public int getChunkNo() {
+		return chunkNo;
+	}
+	
 }

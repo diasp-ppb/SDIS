@@ -17,7 +17,7 @@ public class BackupInitiator implements Runnable {
 	private Peer peer;
 	private String filePath;
 	private int replicationDegree;
-	private static  final int MAX_TRIES = 5;
+	private static final int MAX_TRIES = 5;
 
 	public BackupInitiator(Peer peer, String filePath, int replicationdegree) {
 		this.peer = peer;
@@ -82,6 +82,7 @@ public class BackupInitiator implements Runnable {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			
 			if (peer.getDB().desiredReplication(chunkKey)) {
 				return;
 			}
