@@ -5,11 +5,11 @@ import java.util.HashMap;
 public class Database {
 
 	private HashMap<String, Metadata> chunksInfo;
-	private HashMap<String, String> savedFiles;
+	private HashMap<String, FileId> savedFiles;
 
 	public Database() {
 		chunksInfo = new HashMap<String, Metadata>();
-		savedFiles = new HashMap<String, String>();
+		savedFiles = new HashMap<String, FileId>();
 	}
 
 	public Metadata getChunkInfo(String key) {
@@ -24,21 +24,21 @@ public class Database {
 		return chunksInfo.containsKey(key);
 	}
 
-	public String getFileId(String filepath) {
+	public FileId getFileId(String filepath) {
 		return savedFiles.get(filepath);
 	}
 	
-	public void saveStoredFile(String filepath, String fileid) {
-		savedFiles.put(filepath, fileid);
+	public void saveStoredFile(String filepath, FileId fileinfo) {
+		savedFiles.put(filepath, fileinfo);
 	}
 
 	public boolean desiredReplication(String key) {
-		if(!chunkOnDB(key))
+		if (!chunkOnDB(key))
 			return false;
 
 		Metadata info = getChunkInfo(key);
 		
-		if(info.getCurrentReplication() >= info.getCurrentReplication())
+		if (info.getCurrentReplication() >= info.getCurrentReplication())
 			return true;
 
 		return false;

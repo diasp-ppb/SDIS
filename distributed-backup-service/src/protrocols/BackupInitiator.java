@@ -27,13 +27,15 @@ public class BackupInitiator implements Runnable {
 
 	@Override
 	public void run() {
-		if(peer.getFs().fileExist(filePath)){
+		if (peer.getFs().fileExist(filePath)) {
 			try {
 				File load = new File(filePath);
 				FileId info = new FileId(load);
-				String fileid = new String(info.hash());
-
-				ArrayList<Chunk> splited = peer.getFs().splitFile(load, info.hash(), replicationDegree);
+				String fileid = new String(info.getFileId());
+				
+				ArrayList<Chunk> splitted = peer.getFs().splitFile(load, info.getFileId(), replicationDegree);
+				
+				info.setChunkNo(splitted.size());
 
 				EnumMap<Field, String> messageHeader = new EnumMap<Field, String>(Field.class);
 				messageHeader.put(Field.MESSAGE_TYPE, "PUTCHUNK");
@@ -42,16 +44,16 @@ public class BackupInitiator implements Runnable {
 				messageHeader.put(Field.FILE_ID, fileid);
 				messageHeader.put(Field.REPLICATION_DEGREE, Integer.toString(replicationDegree));
 
-				for(int i = 0; i < splited.size(); i++ ){
+				for(int i = 0; i < splitted.size(); i++ ) {
 					messageHeader.put(Field.CHUNK_NO, Integer.toString(i));
-					Message putchunk = new Message(messageHeader, splited.get(i).getFileData());
+					Message putchunk = new Message(messageHeader, splitted.get(i).getFileData());
 
 					sendPackage(putchunk);
 
 					System.out.println(putchunk.toString());
 				}
 				
-				peer.getDB().saveStoredFile(filePath, fileid);
+				peer.getDB().saveStoredFile(filePath, info);
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -59,7 +61,7 @@ public class BackupInitiator implements Runnable {
 			}
 
 		}
-		else{
+		else {
 			System.out.println("Backup Initiator: file doesn't exist");
 		}
 
