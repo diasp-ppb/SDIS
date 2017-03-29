@@ -10,15 +10,15 @@ import utils.Message.Field;
 
 public class RestoreProtocol implements Runnable {
 	private Peer peer;
-	private DatagramPacket packet;
+	private Message msg;
 	
-	public RestoreProtocol(Peer peer, DatagramPacket packet) {
-		this.packet = packet;
+	public RestoreProtocol(Peer peer, Message msg) {
+		this.msg = msg;
 		this.peer = peer;
 	}
 	
-	private byte[] loadChunk(Message msg) {
-		String chunkId = msg.getFileId() + msg.getFileId();
+	private byte[] loadChunk() {
+		String chunkId = msg.getFileId() + msg.getChunkNo();
 		byte[] chunk;
 		
 		try {
@@ -30,23 +30,35 @@ public class RestoreProtocol implements Runnable {
 		return chunk;
 	}
 	
-	private Message buildChunkMessage(Message originalMsg, byte[] chunk) {
+	private Message buildChunkMessage(byte[] chunk) {
 		EnumMap<Field, String> messageHeader = new EnumMap<Field, String>(Field.class);
 		
 		messageHeader.put(Field.MESSAGE_TYPE, "CHUNK");
-		messageHeader.put(Field.VERSION, originalMsg.getVersion());
+		messageHeader.put(Field.VERSION, msg.getVersion());
 		messageHeader.put(Field.SENDER_ID, peer.getId());
-		messageHeader.put(Field.FILE_ID, originalMsg.getFileId());
-		messageHeader.put(Field.CHUNK_NO, Integer.toString(originalMsg.getChunkNo()));
+		messageHeader.put(Field.FILE_ID, msg.getFileId());
+		messageHeader.put(Field.CHUNK_NO, Integer.toString(msg.getChunkNo()));
 		
 		return new Message(messageHeader, chunk);
 	}
 	
 	private void handlePacket() {
-		Message msg = new Message(packet);
-		byte[] chunk = loadChunk(msg);
+		byte[] chunk = loadChunk();
 		
-		Message chunkMessage = buildChunkMessage(msg, chunk);
+		if (chunk == null) {
+			return;
+		}
+
+		Message chunkMessage = buildChunkMessage(chunk);
+		
+		try {
+			Thread.sleep(400);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		
+		
 	}
 
 	@Override

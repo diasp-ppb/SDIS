@@ -13,11 +13,8 @@ public class BackupChannel extends Channel {
 		super(peer, address, port);
 	}
 	
-	
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		
 		byte[] buf = new byte[65000];
 		
 		while(true) {
