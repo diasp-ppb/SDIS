@@ -16,7 +16,7 @@ public class UpdateRequest implements Runnable{
 		
 		Database db = peer.getDB();
 		
-		String chunkKey = msg.getFileId() + msg.getFileId();
+		String chunkKey = msg.getFileId() + msg.getChunkNo();
 		if(db.chunkOnDB(chunkKey)){
 			db.update(1, chunkKey);
 		}
