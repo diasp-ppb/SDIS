@@ -4,54 +4,49 @@ import java.util.HashMap;
 
 public class Database {
 
-	HashMap<String,Metadata> chunksInfo;
-	HashMap<String,FileId>   fileInfo; 
+	private HashMap<String, Metadata> chunksInfo;
+	private HashMap<String, String> savedFiles;
+
 	public Database() {
-		
-		chunksInfo = new HashMap<String,Metadata> ();
+		chunksInfo = new HashMap<String, Metadata>();
+		savedFiles = new HashMap<String, String>();
 	}
-	
-	
-	public Metadata getChunkInfo (String key){
+
+	public Metadata getChunkInfo(String key) {
 		return chunksInfo.get(key);
 	}
-	
-	
-	public void saveChunkInfo (String key, Metadata info){
-		chunksInfo.put(key,info);
+
+	public void saveChunkInfo(String key, Metadata info) {
+		chunksInfo.put(key, info);
 	}
-	
-	public boolean chunkOnDB(String key){
+
+	public boolean chunkOnDB(String key) {
 		return chunksInfo.containsKey(key);
 	}
-	
-	
-	public FileId  getFileInfo(String key){
-		return fileInfo.get(key);
+
+	public String getFileId(String filepath) {
+		return savedFiles.get(filepath);
 	}
 	
-	public void saveFileInfo (String key, FileId info){
-		fileInfo.put(key, info);
+	public void saveStoredFile(String filepath, String fileid) {
+		savedFiles.put(filepath, fileid);
 	}
-	
-	public boolean fileOnDB(String key){
-		return fileInfo.containsKey(key);
-	}
-	
-	public boolean desiredReplication(String key){
-		if(!chunkOnDB(key)) 
+
+	public boolean desiredReplication(String key) {
+		if(!chunkOnDB(key))
 			return false;
-		
+
 		Metadata info = getChunkInfo(key);
+		
 		if(info.getCurrentReplication() >= info.getCurrentReplication())
 			return true;
-		
+
 		return false;
 	}
-	
-	public void update(int replication, String key ) {
+
+	public void update(int replication, String key) {
 		Metadata old = getChunkInfo(key);
-		saveChunkInfo(key, new Metadata(old.getCurrentReplication() + replication,old.getMinReplication(), old.getStored()));
+		saveChunkInfo(key, new Metadata(old.getCurrentReplication() + replication, old.getMinReplication(), old.getStored()));
 	}
 }
 

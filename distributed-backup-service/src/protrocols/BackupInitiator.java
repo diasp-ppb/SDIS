@@ -18,7 +18,7 @@ public class BackupInitiator implements Runnable {
 	private String filePath;
 	private int replicationDegree;
 	private static  final int MAX_TRIES = 5;
-	
+
 	public BackupInitiator(Peer peer, String filePath, int replicationdegree) {
 		this.peer = peer;
 		this.filePath = filePath;
@@ -30,57 +30,61 @@ public class BackupInitiator implements Runnable {
 		if(peer.getFs().fileExist(filePath)){
 			try {
 				File load = new File(filePath);
-				FileId  info = new FileId(load);
-				
+				FileId info = new FileId(load);
+				String fileid = new String(info.hash());
+
 				ArrayList<Chunk> splited = peer.getFs().splitFile(load, info.hash(), replicationDegree);
-				
+
 				EnumMap<Field, String> messageHeader = new EnumMap<Field, String>(Field.class);
 				messageHeader.put(Field.MESSAGE_TYPE, "PUTCHUNK");
 				messageHeader.put(Field.VERSION, peer.getProtocolVersion());
 				messageHeader.put(Field.SENDER_ID, peer.getId());
-				messageHeader.put(Field.FILE_ID, new String(info.hash()));
+				messageHeader.put(Field.FILE_ID, fileid);
 				messageHeader.put(Field.REPLICATION_DEGREE, Integer.toString(replicationDegree));
-				
+
 				for(int i = 0; i < splited.size(); i++ ){
 					messageHeader.put(Field.CHUNK_NO, Integer.toString(i));
 					Message putchunk = new Message(messageHeader, splited.get(i).getFileData());
-					
+
 					sendPackage(putchunk);
-					
+
 					System.out.println(putchunk.toString());
-				}	
+				}
+				
+				peer.getDB().saveStoredFile(filePath, fileid);
+
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.out.println("BackupInitiator: unable to load file");
 			}
-		
+
 		}
 		else{
-			System.out.println("Backup Initiator: file doesn't exists ");
+			System.out.println("Backup Initiator: file doesn't exist");
 		}
-		
+
 	}
-	
-	
-	void sendPackage(Message putchunk) {
-		
-		int atemps = 0;
-		String chunkKey = putchunk.getFileId()+putchunk.getFileId();
-		
-		peer.getDB().saveChunkInfo(chunkKey, new Metadata(0,putchunk.getReplicationDeg(),false));
-		
-		while(atemps <= MAX_TRIES){
+
+
+	private void sendPackage(Message putchunk) {
+		int attempts = 0;
+		String chunkKey = putchunk.getFileId() + putchunk.getFileId();
+
+		peer.getDB().saveChunkInfo(chunkKey, new Metadata(0, putchunk.getReplicationDeg(), false));
+
+		while (attempts <= MAX_TRIES) {
 			peer.getBackupChannel().sendMessage(putchunk);
+			
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}		
-			if(peer.getDB().desiredReplication(chunkKey)){
+			}
+			if (peer.getDB().desiredReplication(chunkKey)) {
 				return;
 			}
-			
-			atemps ++;
+
+			attempts++;
 		}
 	}
 
