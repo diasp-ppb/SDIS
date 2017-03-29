@@ -12,30 +12,46 @@ public class Database {
 	}
 	
 	
-	Metadata getChunkInfo (String key){
+	public Metadata getChunkInfo (String key){
 		return chunksInfo.get(key);
 	}
 	
 	
-	void saveChunkInfo (String key, Metadata info){
+	public void saveChunkInfo (String key, Metadata info){
 		chunksInfo.put(key,info);
 	}
 	
-	boolean chunkOnDB(String key){
+	public boolean chunkOnDB(String key){
 		return chunksInfo.containsKey(key);
 	}
 	
 	
-	FileId  getFileInfo(String key){
+	public FileId  getFileInfo(String key){
 		return fileInfo.get(key);
 	}
 	
-	void saveFileInfo (String key, FileId info){
+	public void saveFileInfo (String key, FileId info){
 		fileInfo.put(key, info);
 	}
 	
-	boolean fileOnDB(String key){
+	public boolean fileOnDB(String key){
 		return fileInfo.containsKey(key);
+	}
+	
+	public boolean desiredReplication(String key){
+		if(!chunkOnDB(key)) 
+			return false;
+		
+		Metadata info = getChunkInfo(key);
+		if(info.getCurrentReplication() >= info.getCurrentReplication())
+			return true;
+		
+		return false;
+	}
+	
+	public void update(int replication, String key ) {
+		Metadata old = getChunkInfo(key);
+		saveChunkInfo(key, new Metadata(old.getCurrentReplication() + replication,old.getMinReplication(), old.getStored()));
 	}
 }
 

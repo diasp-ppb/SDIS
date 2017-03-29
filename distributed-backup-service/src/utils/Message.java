@@ -68,16 +68,10 @@ public class Message {
 		
 	
 		header = parts[0];
-		body = parts[1].getBytes(StandardCharsets.US_ASCII);
-		
-	//	System.out.println("packet constructor msg size: " + msg.length + " header Size:" + header.length());
+		body = Arrays.copyOfRange(msg, header.length() + 4,msg.length);
 		fields = new EnumMap<Field, String>(Field.class);
 		
 		parseHeaderFields();
-		
-	//	System.out.println("HEADER :" + header) ;
-	//	System.out.println("fields :" + fields) ;
-		
 	}
 	
 	private void parseHeaderFields() {

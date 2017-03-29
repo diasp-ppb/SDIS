@@ -124,6 +124,7 @@ public class FileSystem {
 		
 		try {
 			FileOutputStream out = new FileOutputStream(newfile);
+			System.out.println("DATA STORED: " + ck.getFileData().length);
 			out.write(ck.getFileData());
 			out.close();
 		} catch (FileNotFoundException e) {

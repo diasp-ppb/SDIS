@@ -2,24 +2,14 @@ package filesystem;
 
 public class Metadata {
 	
-	private int num;
 	private int currentReplication;
 	private int minReplication;
-	private int size;
-	private String filename;
-	private int filesize;
+	private boolean stored;
 	
-	public Metadata(int num, int currentReplication, int minReplication, int size, String filename, int filesize) {
-		this.num = num;
+	public Metadata( int currentReplication, int minReplication, boolean stored) {
 		this.currentReplication = currentReplication;
 		this.minReplication= minReplication;
-		this.size = size;
-		this.filename = filename;
-		this.filesize = filesize;
-	}
-
-	public int getNum() {
-		return num;
+		this.stored = stored;
 	}
 
 	public int getCurrentReplication() {
@@ -30,21 +20,6 @@ public class Metadata {
 		return minReplication;
 	}
 
-	public int getSize() {
-		return size;
-	}
-
-	public String getFilename() {
-		return filename;
-	}
-
-	public int getFilesize() {
-		return filesize;
-	}
-
-	public void setNum(int num) {
-		this.num = num;
-	}
 
 	public void setCurrentReplication(int currentReplication) {
 		this.currentReplication = currentReplication;
@@ -53,16 +28,12 @@ public class Metadata {
 	public void setMinReplication(int minReplication) {
 		this.minReplication = minReplication;
 	}
-
-	public void setSize(int size) {
-		this.size = size;
+	
+	public void setStored(boolean bool) {
+		stored = bool;
 	}
-
-	public void setFilename(String filename) {
-		this.filename = filename;
-	}
-
-	public void setFilesize(int filesize) {
-		this.filesize = filesize;
+	
+	public boolean getStored() {
+		return stored;
 	}
 }

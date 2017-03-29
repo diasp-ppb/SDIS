@@ -4,6 +4,8 @@ import java.net.DatagramPacket;
 import java.util.EnumMap;
 
 import chunk.Chunk;
+import filesystem.Database;
+import filesystem.Metadata;
 import peer.Peer;
 import utils.Message;
 import utils.Message.Field;
@@ -19,7 +21,7 @@ public class BackupProtocol implements Runnable {
 	
 	private void saveChunk(Message msg) {
 		Chunk chunk = new Chunk(msg.getChunkNo(), msg.getFileId(), msg.getReplicationDeg(), msg.getData());
-		
+		System.out.println(msg.getData().length + " " +chunk.toString());
 		peer.getFs().saveChunk(chunk);
 	}
 	
@@ -38,29 +40,49 @@ public class BackupProtocol implements Runnable {
 	private void handlePacket() {
 		
 		Message msg = new Message(packet);
-		System.out.println("HANDLER BACKUP " + msg.getMsg().length + " header Size:" + msg.toString().length());
+		System.out.println("HANDLER BACKUP " + msg.getMsg().length + " body Size:" + msg.getData().length);
 		System.out.println("ChunkNo:" + msg.getChunkNo() );
 		if (msg.getType().equals("PUTCHUNK")) {
-			saveChunk(msg);
-			Message response = buildStoredMessage(msg);
 			
-			System.out.println("OUT " + response.toString());
-			try {
-				Thread.sleep(400);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			if(updateDB(msg)) {
+				saveChunk(msg);
+				Message response = buildStoredMessage(msg);
+				System.out.println("OUT " + response.toString());
+				try {
+					Thread.sleep(400);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				peer.getControlChannel().sendMessage(response);
 			}
-			sendMessage(response);
-		}
-		System.out.println("active");
+		
+		}	
 	}
+	
+	
+	private boolean updateDB(Message msg) {
+		
+		String chunkKey = msg.getFileId()+msg.getChunkNo();
+		
+		Database db = peer.getDB();
+		
+		if(db.chunkOnDB(chunkKey)){
+			if(!db.getChunkInfo(chunkKey).getStored()){
+				db.update(1, chunkKey);
+			}
+			else
+				return false;
+		}
+		else {
+			db.saveChunkInfo(chunkKey,new Metadata(1,msg.getReplicationDeg(),true));
+		}
+		return true;
+	}
+	
+	
 
 	@Override
 	public void run() {
 		handlePacket();
-	}
-	
-	private synchronized void sendMessage(Message response)  {
-		peer.getControlChannel().sendMessage(response);
 	}
 }

@@ -8,6 +8,7 @@ import java.util.EnumMap;
 
 import chunk.Chunk;
 import filesystem.FileId;
+import filesystem.Metadata;
 import peer.Peer;
 import utils.Message;
 import utils.Message.Field;
@@ -16,6 +17,7 @@ public class BackupInitiator implements Runnable {
 	private Peer peer;
 	private String filePath;
 	private int replicationDegree;
+	private static  final int MAX_TRIES = 5;
 	
 	public BackupInitiator(Peer peer, String filePath, int replicationdegree) {
 		this.peer = peer;
@@ -29,12 +31,8 @@ public class BackupInitiator implements Runnable {
 			try {
 				File load = new File(filePath);
 				FileId  info = new FileId(load);
-				// inseri lo na DB
 				
 				ArrayList<Chunk> splited = peer.getFs().splitFile(load, info.hash(), replicationDegree);
-				// enviar chunks
-				// confirmar replication degree?? os stores? 
-				
 				
 				EnumMap<Field, String> messageHeader = new EnumMap<Field, String>(Field.class);
 				messageHeader.put(Field.MESSAGE_TYPE, "PUTCHUNK");
@@ -44,9 +42,10 @@ public class BackupInitiator implements Runnable {
 				messageHeader.put(Field.REPLICATION_DEGREE, Integer.toString(replicationDegree));
 				
 				for(int i = 0; i < splited.size(); i++ ){
-					messageHeader.put(Field.CHUNK_NO, Integer.toString(splited.get(i).getChunkNo()));
+					messageHeader.put(Field.CHUNK_NO, Integer.toString(i));
 					Message putchunk = new Message(messageHeader, splited.get(i).getFileData());
-					peer.getBackupChannel().sendMessage(putchunk);
+					
+					sendPackage(putchunk);
 					
 					System.out.println(putchunk.toString());
 				}	
@@ -60,6 +59,29 @@ public class BackupInitiator implements Runnable {
 			System.out.println("Backup Initiator: file doesn't exists ");
 		}
 		
+	}
+	
+	
+	void sendPackage(Message putchunk) {
+		
+		int atemps = 0;
+		String chunkKey = putchunk.getFileId()+putchunk.getFileId();
+		
+		peer.getDB().saveChunkInfo(chunkKey, new Metadata(0,putchunk.getReplicationDeg(),false));
+		
+		while(atemps <= MAX_TRIES){
+			peer.getBackupChannel().sendMessage(putchunk);
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}		
+			if(peer.getDB().desiredReplication(chunkKey)){
+				return;
+			}
+			
+			atemps ++;
+		}
 	}
 
 }

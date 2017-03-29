@@ -119,6 +119,10 @@ public class Peer implements RMIservice {
 		return mcChannel;
 	}
 	
+	public Database getDB() {
+		return db;
+	}
+	
 	@Override
 	public String sayHello() throws RemoteException {
 		return  "Hello, world!";
