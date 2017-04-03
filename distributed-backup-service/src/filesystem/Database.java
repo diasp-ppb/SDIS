@@ -6,10 +6,12 @@ public class Database {
 
 	private HashMap<String, Metadata> chunksInfo;
 	private HashMap<String, FileId> savedFiles;
+	private HashMap<String, Boolean> chunkSended;
 
 	public Database() {
 		chunksInfo = new HashMap<String, Metadata>();
 		savedFiles = new HashMap<String, FileId>();
+		chunkSended = new HashMap<String, Boolean> ();
 	}
 
 	public Metadata getChunkInfo(String key) {
@@ -48,6 +50,27 @@ public class Database {
 		Metadata old = getChunkInfo(key);
 		saveChunkInfo(key, new Metadata(old.getCurrentReplication() + replication, old.getMinReplication(), old.getStored()));
 	}
+	
+	public void registerChunkSended(String chunkId) {
+		chunkSended.put(chunkId, true);
+	}
+	
+	public void clearChunkSended(String chunkId) {
+		chunkSended.put(chunkId, false); 
+		// TODO  OU DELETE?
+	}
+	
+	public boolean chunkAlreadySended(String chunkId) {
+		if( chunkSended.get(chunkId) != null)
+			return chunkSended.containsKey(chunkId);
+		return false;
+	}
+	
+	public void removeChunk(String chunkId) {
+		chunkSended.remove(chunkId);
+		chunksInfo.remove(chunkId);
+	}
+	
 }
 
 

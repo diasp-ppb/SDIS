@@ -14,7 +14,7 @@ public class FileSystem {
 
 	private final String  chunkDir = "data/chunks/";
 	private final String  filesDir = "data/files/";
-
+	
 	public FileSystem () {
 		//Create the peer dir if they dont exists
 		if(!directoryExist("data")) {
@@ -32,13 +32,17 @@ public class FileSystem {
 			file.mkdir();
 		}
 	}
+	
+	public String getChunkDir() {
+		return chunkDir;
+	}
 
 	public boolean fileExist(String filePathString) {
 		File file  = new File(filePathString);
 		return (file.exists() && file.isFile());
 	}
 
-	public static boolean directoryExist(String dirPath) {
+	public boolean directoryExist(String dirPath) {
 		File file = new File(dirPath);
 		return (file.exists() && file.isDirectory());
 	}
@@ -94,9 +98,9 @@ public class FileSystem {
 		}
 	}
 
-	public byte[] loadChunk(String chunkID) throws FileNotFoundException {
+	public byte[] loadChunk(String chunkID, String fileID) throws FileNotFoundException {
 		//TODO 
-		File load = new File(chunkDir + chunkID);
+		File load = new File(chunkDir + fileID + "/"+ chunkID);
 
 		FileInputStream in = new FileInputStream(load);
 		byte[] data = new byte[(int) load.length()];
@@ -112,7 +116,12 @@ public class FileSystem {
 	}
 
 	public void saveChunk(Chunk ck) {
-		String path = chunkDir + ck.getFileId() + ck.getChunkNo();
+		String fileChunks = chunkDir + ck.getFileId() + "/";
+		String path = fileChunks + ck.getFileId() + ck.getChunkNo();
+		if(! directoryExist(fileChunks)){
+			File theDir = new File(fileChunks);
+			theDir.mkdir();
+		}
 		File newfile = new File(path);
 		if(!fileExist(path)) {	
 			try {
@@ -136,9 +145,10 @@ public class FileSystem {
 		}
 	}
 
-	void Deletechunk(String chunkID){
-		if(fileExist(chunkDir+ chunkID)) {
-			File erase = new File(chunkDir + chunkID);
+	void Deletechunk(String chunkID,String fileID){
+		String path = chunkDir + fileID + "/" + chunkID;
+		if(fileExist(path)) {
+			File erase = new File(path);
 			erase.delete();
 		}
 	}
@@ -174,4 +184,6 @@ public class FileSystem {
 		//System.out.println(result.size());
 		return result;
 	}
+	
+
 }

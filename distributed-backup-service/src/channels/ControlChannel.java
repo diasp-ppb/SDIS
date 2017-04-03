@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import filesystem.UpdateRequest;
 import peer.Peer;
 import protrocols.BackupProtocol;
+import protrocols.DeleteProtocol;
 import protrocols.RestoreProtocol;
 import utils.Message;
 
@@ -40,6 +41,7 @@ public class ControlChannel extends Channel{
 				new Thread(new RestoreProtocol(peer, received)).start();
 				break;
 			case "DELETE":
+				new Thread(new DeleteProtocol(peer,received)).start();
 				break;
 			case "REMOVED":
 				break;

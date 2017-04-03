@@ -20,6 +20,29 @@ public class RestoreInitiator implements Runnable {
 		this.peer = peer;
 		this.filePath = filePath;
 	}
+	
+
+	private Message buildGetChunkMessage(int chunkNo) {
+		EnumMap<Field, String> messageHeader = new EnumMap<Field, String>(Field.class);
+
+		messageHeader.put(Field.MESSAGE_TYPE, "GETCHUNK");
+		messageHeader.put(Field.VERSION, peer.getProtocolVersion());
+		messageHeader.put(Field.SENDER_ID, peer.getId());
+		messageHeader.put(Field.FILE_ID, fileId);
+		messageHeader.put(Field.CHUNK_NO, Integer.toString(chunkNo));
+
+		return new Message(messageHeader);
+	}
+
+	private void sendPackage(int chunkNo) {
+		Message getChunk = buildGetChunkMessage(chunkNo);
+		peer.getControlChannel().sendMessage(getChunk);
+	}
+
+	
+	private void buildFile() {
+		
+	}
 
 	@Override
 	public void run() {
@@ -38,23 +61,17 @@ public class RestoreInitiator implements Runnable {
 		for (int i = 0; i < numberChunks; i++) {
 			sendPackage(i);
 		}
-	}
-
-	private Message buildGetChunkMessage(int chunkNo) {
-		EnumMap<Field, String> messageHeader = new EnumMap<Field, String>(Field.class);
-
-		messageHeader.put(Field.MESSAGE_TYPE, "GETCHUNK");
-		messageHeader.put(Field.VERSION, peer.getProtocolVersion());
-		messageHeader.put(Field.SENDER_ID, peer.getId());
-		messageHeader.put(Field.FILE_ID, fileId);
-		messageHeader.put(Field.CHUNK_NO, Integer.toString(chunkNo));
-
-		return new Message(messageHeader);
-	}
-
-	private void sendPackage(int chunkNo) {
-		Message getChunk = buildGetChunkMessage(chunkNo);
-		peer.getControlChannel().sendMessage(getChunk);
+		
+		
+		/*
+		 * CHECK ALL RECEIVED
+		 * IF NOT RECOVER 
+		 * ALL RECEIVED BUILD FILE
+		 * PROBLEM HOW TO KNOW when all received?  
+		 */
+		
+		
+		
 	}
 
 }
