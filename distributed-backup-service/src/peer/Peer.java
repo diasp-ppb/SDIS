@@ -18,6 +18,7 @@ import filesystem.Database;
 import filesystem.Disk;
 import filesystem.FileSystem;
 import protrocols.BackupInitiator;
+import protrocols.Reclaim;
 import protrocols.RestoreInitiator;
 import utils.Message;
 
@@ -150,8 +151,8 @@ public class Peer implements RMIservice {
 	}
 
 	@Override
-	public void reclaim() throws RemoteException {
-		// TODO Auto-generated method stub
+	public void reclaim(int maxSize) throws RemoteException {
+		new Thread(new Reclaim(this, maxSize)).start();
 
 	}
 
