@@ -15,6 +15,7 @@ import channels.BackupChannel;
 import channels.ControlChannel;
 import channels.RestoreChannel;
 import filesystem.Database;
+import filesystem.Disk;
 import filesystem.FileSystem;
 import protrocols.BackupInitiator;
 import protrocols.RestoreInitiator;
@@ -38,7 +39,8 @@ public class Peer implements RMIservice {
 	
 	private FileSystem fs;
 	private Database db; //TODO INICIALIZAR E CRIAR FUNÇOES DE INSERÇAO/UPDATE
-
+	private Disk disk;
+	
 	public static void main(String [] args) throws UnknownHostException {
 		try {
 			Peer peer = new Peer(args);
@@ -55,6 +57,7 @@ public class Peer implements RMIservice {
 		}
 		fs = new FileSystem();
 		db = new Database();
+		disk = new Disk();
 	}
 
 	public String getProtocolVersion() {
@@ -121,6 +124,10 @@ public class Peer implements RMIservice {
 	
 	public Database getDB() {
 		return db;
+	}
+	
+	public Disk getDisk() {
+		return disk;
 	}
 	
 	@Override

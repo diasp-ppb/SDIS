@@ -2,35 +2,38 @@ package filesystem;
 
 public class Disk {
 	
-	private int size;
-	private int  freeSpace;
-
-	public Disk(int size){
-		this.size = size;
-		this.freeSpace = 0;
+	private int currSize;
+	private int maxSize;
+	
+	public Disk() {
+		maxSize = Integer.MAX_VALUE;
+		currSize = 0;
 	}
 	
-	
-	public  boolean enoughtSpace(int filesize) {
-		return freeSpace >= filesize;
+	public Disk(int size) {
+		this.maxSize = size;
+		this.currSize = 0;
 	}
 	
+	public boolean enoughSpace(int filesize) {
+		return currSize + filesize >= maxSize;
+	}
 	
-	public  boolean resizeDisk(int newSize) {
-		if(newSize <  freeSpace){
+	public boolean resizeDisk(int newSize) {
+		if (newSize < currSize) {
 			return false;
 		}
-		size = newSize;
+		
+		maxSize = newSize;
 		return true;
 	}
 	
-	public 	boolean reserveSpace(int filesize){
-		if( enoughtSpace(filesize)){
-			freeSpace -= filesize;
+	public boolean increaseSize(int increment) {
+		if (enoughSpace(increment)) {
+			currSize += increment;
 			return true;
 		}
+		
 		return false;
 	}
-	
-	
 }
