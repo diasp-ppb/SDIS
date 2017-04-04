@@ -36,4 +36,12 @@ public class Disk {
 		
 		return false;
 	}
+	
+	public int getCurrSize() {
+		return currSize;
+	}
+	
+	public int getMaxSize() {
+		return maxSize;
+	}
 }
