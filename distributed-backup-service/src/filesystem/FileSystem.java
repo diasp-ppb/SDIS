@@ -9,12 +9,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import chunk.Chunk;
+import utils.Message;
 
 public class FileSystem {
 
 	private final String  chunkDir = "data/chunks/";
 	private final String  filesDir = "data/files/";
-	
+
 	public FileSystem () {
 		//Create the peer dir if they dont exists
 		if(!directoryExist("data")) {
@@ -32,7 +33,7 @@ public class FileSystem {
 			file.mkdir();
 		}
 	}
-	
+
 	public String getChunkDir() {
 		return chunkDir;
 	}
@@ -98,9 +99,17 @@ public class FileSystem {
 		}
 	}
 
-	public byte[] loadChunk(String chunkID, String fileID) throws FileNotFoundException {
-		//TODO 
-		File load = new File(chunkDir + fileID + "/"+ chunkID);
+	public byte[] loadChunk(int fileID, int chunkNo) throws FileNotFoundException {
+
+		String path = chunkDir +fileID+ "/"+chunkNo;
+
+		File load = new File(path);
+
+		//System.out.println(path);
+
+		if(directoryExist(path)) {
+			System.out.println("existe");
+		};
 
 		FileInputStream in = new FileInputStream(load);
 		byte[] data = new byte[(int) load.length()];
@@ -109,7 +118,7 @@ public class FileSystem {
 			in.read(data);
 			in.close();
 		} catch (IOException e) {
-			System.out.println("Load file failed: " + chunkID);
+			System.out.println("Load file failed: " + fileID+ " " +chunkNo);
 			e.printStackTrace();
 		}
 		return data;
@@ -130,7 +139,7 @@ public class FileSystem {
 				e.printStackTrace();
 			}
 		}
-		
+
 		try {
 			FileOutputStream out = new FileOutputStream(newfile);
 			System.out.println("DATA STORED: " + ck.getFileData().length);
@@ -185,5 +194,38 @@ public class FileSystem {
 		return result;
 	}
 	
+	private void saveFile(String name,byte[] data , boolean append) {
+		if(!fileExist(filesDir + name)) {
+			File newfile = new File(filesDir + name);
+			try {
+				newfile.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 
+		try {
+			FileOutputStream out = new FileOutputStream(filesDir + name, append);
+			out.write(data);
+			out.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+	}
+
+	public  boolean restoreFile (Message data[], String filename) {
+
+		if(data.length > 0) {
+				saveFile(filename,data[0].getData(), false);
+			for( int i = 1; i < data.length ; i++) {
+				saveFile(filename, data[i].getData(), true);
+			}
+			return true;
+		}
+		return false;
+	}
 }

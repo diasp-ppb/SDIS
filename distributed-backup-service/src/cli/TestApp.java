@@ -8,10 +8,12 @@ import java.nio.charset.StandardCharsets;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
-import peer.RMIservice;
+
 import chunk.Chunk;
 import filesystem.FileSystem;
+import peer.RMIservice;
 
 public class TestApp {
 	
@@ -54,22 +56,20 @@ public class TestApp {
 		
 		// RMI TO TEST SERVER SIDE
 		
-		 FileSystem fs  = new FileSystem();
-		 
-			
+	 	
 		 try {
 			 	System.out.println(args[PEER_AP]);
 	            Registry registry = LocateRegistry.getRegistry();
 	            RMIservice stub = (RMIservice) registry.lookup("helloserver1");
 	            stub.backup(args[OPND_1], 1);
+	            TimeUnit.SECONDS.sleep(6);
+	            stub.restore(args[OPND_1]);
 	         //   System.out.println("response: " + response);
 	        } catch (Exception e) {
 	            System.err.println("Client exception: " + e.toString());
 	            e.printStackTrace();
 	        }
 	        
-	    
-		
 		// TO TEST MESSAGE SPLIT
 	//	Message t = new Message("asdasdasd \r\n\r\n asdasdadasda"," ");
  

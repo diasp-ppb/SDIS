@@ -7,11 +7,15 @@ public class Database {
 	private HashMap<String, Metadata> chunksInfo;
 	private HashMap<String, FileId> savedFiles;
 	private HashMap<String, Boolean> chunkSent;
+	private HashMap<String, Integer>  fileSystemId;
+
+	private static int UNIQUE_ID = 0;
 
 	public Database() {
 		chunksInfo = new HashMap<String, Metadata>();
 		savedFiles = new HashMap<String, FileId>();
 		chunkSent = new HashMap<String, Boolean>();
+		fileSystemId = new HashMap<String, Integer>();
 	}
 
 	public Metadata getChunkInfo(String key) {
@@ -79,6 +83,19 @@ public class Database {
 		return savedFiles;
 	}
 	
+	public void addFileStored(String fileId){
+		fileSystemId.put(fileId,++UNIQUE_ID);
+	}
+	
+	public boolean FileStored(String fileId) {
+		
+		return fileSystemId.containsKey(fileId);
+	}
+	
+	public int getFileStorageId(String  fileId) {
+		System.out.println(fileSystemId.toString());
+		return fileSystemId.get(fileId);
+	}
 }
 
 

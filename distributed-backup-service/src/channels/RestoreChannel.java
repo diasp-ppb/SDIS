@@ -3,16 +3,22 @@ package channels;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.util.HashMap;
 
+import filesystem.Metadata;
 import filesystem.UpdateRequest;
 import peer.Peer;
 import protrocols.BackupProtocol;
+import protrocols.RestoreInitiator;
 import utils.Message;
 
 public class RestoreChannel  extends Channel{
+	
+	private HashMap<String, RestoreInitiator> restoreInitiators;
 
 	public RestoreChannel(Peer peer, InetAddress address, int port) {
 		super(peer, address, port);
+		restoreInitiators = new HashMap<String, RestoreInitiator>();
 	}
 
 	@Override
@@ -31,8 +37,27 @@ public class RestoreChannel  extends Channel{
 			
 			Message received = new Message(packet);
 			
-			new Thread(new UpdateRequest(peer, received)).start();
+			//was requested by peer
+			System.out.println(restoreInitiators);
+			System.out.println(received.toString());
+			if(restoreInitiators.containsKey(received.getFileId()))
+			{
+				restoreInitiators.get(received.getFileId()).putMessage(received);
+				System.out.println("redirect chunk to restore thread");
+			}
+			else {
+				new Thread(new UpdateRequest(peer, received)).start();
+			}
+			
 		}
 	}
-
+	
+	
+    public void addRestoreInitiator(String fileId, RestoreInitiator restore) {
+    	restoreInitiators.put(fileId, restore);
+    }
+    
+    public void removerestoreInitiator(String fileId){
+    	restoreInitiators.remove(fileId);
+    }
 }

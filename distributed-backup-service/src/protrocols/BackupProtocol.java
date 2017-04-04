@@ -73,6 +73,11 @@ public class BackupProtocol implements Runnable {
 		else {
 			db.saveChunkInfo(chunkKey,new Metadata(1,msg.getReplicationDeg(),true));
 		}
+		
+		if(! db.FileStored(msg.getFileId())) {
+			 db.addFileStored(msg.getFileId());
+		}
+		
 		return true;
 	}
 	

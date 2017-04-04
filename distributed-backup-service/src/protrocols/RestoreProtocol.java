@@ -17,14 +17,24 @@ public class RestoreProtocol implements Runnable {
 		this.peer = peer;
 	}
 	
-	private byte[] loadChunk(String chunkId) {
+	private byte[] loadChunk(String fileId,  int chunkNo) {
 		
 		byte[] chunk;
 		
+		System.out.println(fileId);
+		if(peer.getDB().FileStored(fileId)){
+			System.out.println("ta");
+		}
+		
+		int storageId = peer.getDB().getFileStorageId(fileId);
+		
+		
+		
 		try {
-			chunk = peer.getFs().loadChunk(chunkId,msg.getFileId());
+			chunk = peer.getFs().loadChunk(storageId, chunkNo);
 		} catch (FileNotFoundException e) {
 			chunk = null;
+			System.out.println("No load chunk");
 		}
 		
 		return chunk;
@@ -43,15 +53,24 @@ public class RestoreProtocol implements Runnable {
 	}
 	
 	private void handlePacket() {
+		
+		
+		
+		System.out.println("restore " + msg.toString());
 		String chunkId = msg.getFileId() + msg.getChunkNo();
 		
-		byte[] chunk = loadChunk(chunkId);
+		
+		
+		byte[] chunk = loadChunk(msg.getFileId() , msg.getChunkNo());
 		
 		if (chunk == null) {
+			System.out.println("Chunk isn't avaiable");
 			return;
 		}
-
+		
 		Message chunkMessage = buildChunkMessage(chunk);
+		
+	
 		
 		try {
 			Thread.sleep(400);
@@ -61,6 +80,7 @@ public class RestoreProtocol implements Runnable {
 		
 		if(!peer.getDB().chunkAlreadySent(chunkId)) {
 			peer.getRestoreChannel().sendMessage(chunkMessage);
+			System.out.println("sent CHUNK");
 		}
 		
 		peer.getDB().clearChunkSent(chunkId);

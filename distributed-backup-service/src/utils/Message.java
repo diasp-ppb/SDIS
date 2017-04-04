@@ -39,7 +39,7 @@ public class Message {
 		this.body = body;
 		ByteArrayOutputStream builder = new ByteArrayOutputStream();
 		try {
-			builder.write(this.header.getBytes(StandardCharsets.US_ASCII));
+			builder.write(this.header.getBytes());
 			builder.write(this.body);
 		} catch (IOException e) {
 			System.out.println("builder fail");
