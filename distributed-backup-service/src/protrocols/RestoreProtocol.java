@@ -80,7 +80,6 @@ public class RestoreProtocol implements Runnable {
 		
 		if(!peer.getDB().chunkAlreadySent(chunkId)) {
 			peer.getRestoreChannel().sendMessage(chunkMessage);
-			System.out.println("sent CHUNK");
 		}
 		
 		peer.getDB().clearChunkSent(chunkId);

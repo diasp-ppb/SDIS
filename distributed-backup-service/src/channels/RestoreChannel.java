@@ -43,7 +43,6 @@ public class RestoreChannel  extends Channel{
 			if(restoreInitiators.containsKey(received.getFileId()))
 			{
 				restoreInitiators.get(received.getFileId()).putMessage(received);
-				System.out.println("redirect chunk to restore thread");
 			}
 			else {
 				new Thread(new UpdateRequest(peer, received)).start();

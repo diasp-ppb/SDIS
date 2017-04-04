@@ -93,7 +93,6 @@ public class Database {
 	}
 	
 	public int getFileStorageId(String  fileId) {
-		System.out.println(fileSystemId.toString());
 		return fileSystemId.get(fileId);
 	}
 }

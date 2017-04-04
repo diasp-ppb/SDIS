@@ -195,6 +195,9 @@ public class FileSystem {
 	}
 	
 	private void saveFile(String name,byte[] data , boolean append) {
+			
+		System.out.println(data.length);
+		
 		if(!fileExist(filesDir + name)) {
 			File newfile = new File(filesDir + name);
 			try {
