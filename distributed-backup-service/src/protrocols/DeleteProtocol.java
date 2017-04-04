@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.net.DatagramPacket;
 import java.util.EnumMap;
 
+import filesystem.Database;
 import peer.Peer;
 import utils.Message;
 import utils.Message.Field;
@@ -19,7 +20,12 @@ public class DeleteProtocol implements Runnable {
 	}
 	
 	private void handlePacket() {
-		String chunksDir = peer.getFs().getChunkDir() + "/" + msg.getFileId();
+		
+		System.out.println("delete protocol");
+		Database DB = peer.getDB();
+		
+		int storageId = DB.getFileStorageId(msg.getFileId());
+		String chunksDir = peer.getFs().getChunkDir() + storageId;
 		
 		if(!peer.getFs().directoryExist(chunksDir)) {
 			return;
@@ -28,12 +34,17 @@ public class DeleteProtocol implements Runnable {
 		File folder = new File(chunksDir);
 		
 		for(File file: folder.listFiles()) {
-			peer.getDB().removeChunk(file.getName());
+			DB.removeChunk(msg.getFileId()+file.getName());
 	        file.delete();
 		}
+		
+		DB.removeFile(msg.getFileId(), null);
+		
 		if(!folder.delete()) {
 			System.err.println("Failed do DELETE all info");
 		}
+		
+		System.out.println("DELETED");
 	}
 
 	@Override

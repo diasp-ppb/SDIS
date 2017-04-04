@@ -72,7 +72,7 @@ public class Database {
 	
 	public void removeChunk(String chunkId) {
 		chunkSent.remove(chunkId);
-		getChunksInfo().remove(chunkId);
+		chunksInfo.remove(chunkId);
 	}
 
 	public HashMap<String, Metadata> getChunksInfo() {
@@ -94,6 +94,12 @@ public class Database {
 	
 	public int getFileStorageId(String  fileId) {
 		return fileSystemId.get(fileId);
+	}
+	public void removeFile(String fileId, String path) {
+		if(fileId != null)
+		fileSystemId.remove(fileId);
+		if(path != null)
+			savedFiles.remove(path);
 	}
 }
 

@@ -124,9 +124,9 @@ public class FileSystem {
 		return data;
 	}
 
-	public void saveChunk(Chunk ck) {
-		String fileChunks = chunkDir + ck.getFileId() + "/";
-		String path = fileChunks + ck.getFileId() + ck.getChunkNo();
+	public void saveChunk(Chunk ck, int fileStoreId) {
+		String fileChunks = chunkDir + fileStoreId + "/";
+		String path = fileChunks + ck.getChunkNo();
 		if(! directoryExist(fileChunks)){
 			File theDir = new File(fileChunks);
 			theDir.mkdir();

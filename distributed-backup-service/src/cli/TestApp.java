@@ -63,7 +63,7 @@ public class TestApp {
 	            RMIservice stub = (RMIservice) registry.lookup("helloserver1");
 	            stub.backup(args[OPND_1], 1);
 	            TimeUnit.SECONDS.sleep(6);
-	            stub.restore(args[OPND_1]);
+	            stub.delete(args[OPND_1]);
 	         //   System.out.println("response: " + response);
 	        } catch (Exception e) {
 	            System.err.println("Client exception: " + e.toString());

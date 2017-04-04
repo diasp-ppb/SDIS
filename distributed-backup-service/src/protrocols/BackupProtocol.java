@@ -22,7 +22,9 @@ public class BackupProtocol implements Runnable {
 	private void saveChunk(Message msg) {
 		Chunk chunk = new Chunk(msg.getChunkNo(), msg.getFileId(), msg.getReplicationDeg(), msg.getData());
 		System.out.println(msg.getData().length + " " +chunk.toString());
-		peer.getFs().saveChunk(chunk);
+		
+		int storageId  = peer.getDB().getFileStorageId(msg.getFileId());
+		peer.getFs().saveChunk(chunk, storageId);
 	}
 	
 	private Message buildStoredMessage(Message originalMsg) {

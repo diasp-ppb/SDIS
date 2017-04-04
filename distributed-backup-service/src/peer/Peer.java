@@ -17,6 +17,7 @@ import channels.RestoreChannel;
 import filesystem.Database;
 import filesystem.FileSystem;
 import protrocols.BackupInitiator;
+import protrocols.DeleteInitiator;
 import protrocols.RestoreInitiator;
 import utils.Message;
 
@@ -137,8 +138,9 @@ public class Peer implements RMIservice {
 	}
 
 	@Override
-	public void delete() throws RemoteException {
-		// TODO Auto-generated method stub
+	public void delete(String path ) throws RemoteException {
+		System.out.println("Called delete with path: "  + path + ".");
+		new Thread(new DeleteInitiator(this,path)).start();
 
 	}
 
