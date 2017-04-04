@@ -59,11 +59,11 @@ public class RestoreProtocol implements Runnable {
 			e.printStackTrace();
 		}
 		
-		if(!peer.getDB().chunkAlreadySended(chunkId)) {
+		if(!peer.getDB().chunkAlreadySent(chunkId)) {
 			peer.getRestoreChannel().sendMessage(chunkMessage);
 		}
 		
-		peer.getDB().clearChunkSended(chunkId);
+		peer.getDB().clearChunkSent(chunkId);
 		
 	}
 

@@ -1,4 +1,4 @@
-package channels;
+package peer;
 
 import java.rmi.*;
 
@@ -7,4 +7,5 @@ public interface RMIservice extends Remote{
 	void restore(String path) throws RemoteException;
 	void delete() throws RemoteException;
 	void reclaim() throws RemoteException;
+	String state() throws RemoteException;
 }

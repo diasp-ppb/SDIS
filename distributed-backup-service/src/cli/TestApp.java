@@ -9,7 +9,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 
-import channels.RMIservice;
+import peer.RMIservice;
 import chunk.Chunk;
 import filesystem.FileSystem;
 

@@ -13,7 +13,6 @@ import java.rmi.server.UnicastRemoteObject;
 
 import channels.BackupChannel;
 import channels.ControlChannel;
-import channels.RMIservice;
 import channels.RestoreChannel;
 import filesystem.Database;
 import filesystem.FileSystem;
@@ -147,5 +146,10 @@ public class Peer implements RMIservice {
 	public void reclaim() throws RemoteException {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public String state() throws RemoteException {
+		return new State(this).toString();
 	}
 }

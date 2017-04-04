@@ -25,7 +25,7 @@ public class UpdateRequest implements Runnable {
 	
 	private void chunkHandler() {
 		String chunkKey = msg.getFileId() + msg.getChunkNo();
-		peer.getDB().chunkAlreadySended(chunkKey);
+		peer.getDB().chunkAlreadySent(chunkKey);
 	}
 	
 	private void handleMessage() {
