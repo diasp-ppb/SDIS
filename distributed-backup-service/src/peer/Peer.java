@@ -15,9 +15,12 @@ import channels.BackupChannel;
 import channels.ControlChannel;
 import channels.RestoreChannel;
 import filesystem.Database;
+import filesystem.Disk;
 import filesystem.FileSystem;
 import protrocols.BackupInitiator;
 import protrocols.DeleteInitiator;
+import protrocols.Reclaim;
+
 import protrocols.RestoreInitiator;
 import utils.Message;
 
@@ -39,7 +42,8 @@ public class Peer implements RMIservice {
 	
 	private FileSystem fs;
 	private Database db; //TODO INICIALIZAR E CRIAR FUNÇOES DE INSERÇAO/UPDATE
-
+	private Disk disk;
+	
 	public static void main(String [] args) throws UnknownHostException {
 		try {
 			Peer peer = new Peer(args);
@@ -56,6 +60,7 @@ public class Peer implements RMIservice {
 		}
 		fs = new FileSystem();
 		db = new Database();
+		disk = new Disk();
 	}
 
 	public String getProtocolVersion() {
@@ -124,6 +129,10 @@ public class Peer implements RMIservice {
 		return db;
 	}
 	
+	public Disk getDisk() {
+		return disk;
+	}
+	
 	@Override
 	public void backup(String path, int replicationDegree) throws RemoteException {
 		System.out.println("Called backup with path: "  + path + " and repDegree: " + replicationDegree + ".");
@@ -145,8 +154,8 @@ public class Peer implements RMIservice {
 	}
 
 	@Override
-	public void reclaim() throws RemoteException {
-		// TODO Auto-generated method stub
+	public void reclaim(int maxSize) throws RemoteException {
+		new Thread(new Reclaim(this, maxSize)).start();
 
 	}
 
