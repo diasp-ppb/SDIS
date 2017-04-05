@@ -68,7 +68,7 @@ public class Message {
 		
 	
 		header = parts[0];
-		body = Arrays.copyOfRange(msg, header.length() + 4+25,msg.length);
+		body = Arrays.copyOfRange(msg, header.getBytes().length + 4,msg.length);
 		System.out.println("mesage DatagramPacket packe "+ this.body.length);
 		fields = new EnumMap<Field, String>(Field.class);
 		
