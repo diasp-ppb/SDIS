@@ -66,6 +66,14 @@ public class FileId {
 		fileId = Utils.sha256(name + owner + lastModification + "" + fileSize);
 	}
 	
+	public String getName() {
+		return name;
+	}
+	
+	public long getFileSize() {
+		return fileSize;
+	}
+	
 	public byte[] getFileId() {
 		return fileId;
 	}
