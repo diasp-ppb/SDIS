@@ -14,13 +14,15 @@ public class UpdateRequest implements Runnable {
 
 	private void storedHandler() {
 		Database db = peer.getDB();
-
+		
 		String chunkKey = msg.getFileId() + msg.getChunkNo();
+		
+		System.out.println("STORED UPDATE");
+		
 		if (db.chunkOnDB(chunkKey)) {
+			
 			db.update(1, chunkKey);
-		} else {
-			db.saveChunkInfo(chunkKey, new Metadata(1,1,msg.getData().length));
-		}
+		} 
 	}
 	
 	private void chunkHandler() {

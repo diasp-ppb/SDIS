@@ -13,6 +13,8 @@ public class Message {
 	private String header;
 	private byte[] body;
 	
+	public static int body_MAX_LENGHT = 64000;
+	
 	private DatagramPacket packet;
 	
 	private EnumMap<Field, String> fields;
@@ -69,7 +71,6 @@ public class Message {
 	
 		header = parts[0];
 		body = Arrays.copyOfRange(msg, header.getBytes().length + 4,msg.length);
-		System.out.println("mesage DatagramPacket packe "+ this.body.length);
 		fields = new EnumMap<Field, String>(Field.class);
 		
 		parseHeaderFields();

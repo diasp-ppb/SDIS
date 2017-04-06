@@ -9,9 +9,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
-
-
-import chunk.Chunk;
 import filesystem.FileSystem;
 import peer.RMIservice;
 
@@ -61,9 +58,18 @@ public class TestApp {
 			 	System.out.println(args[PEER_AP]);
 	            Registry registry = LocateRegistry.getRegistry();
 	            RMIservice stub = (RMIservice) registry.lookup("helloserver1");
-	            // stub.backup(args[OPND_1], 1);
+	             stub.backup(args[OPND_1], 1);
+	             
+	             TimeUnit.SECONDS.sleep(10);
+	          
+	             stub.restore(args[OPND_1]);
+	             
+	             
+
+	             TimeUnit.SECONDS.sleep(10);
+		         
 	            //TimeUnit.SECONDS.sleep(6);
-	            stub.delete(args[OPND_1]);
+	              stub.delete(args[OPND_1]);
 	            System.out.println(stub.state());
 	         //   System.out.println("response: " + response);
 	        } catch (Exception e) {

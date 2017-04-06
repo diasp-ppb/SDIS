@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.EnumMap;
-
-import chunk.Chunk;
 import filesystem.FileId;
 import filesystem.Metadata;
 import peer.Peer;
@@ -33,7 +31,7 @@ public class BackupInitiator implements Runnable {
 				FileId info = new FileId(load, replicationDegree);
 				String fileid = new String(info.getFileId());
 				
-				ArrayList<Chunk> splitted = peer.getFs().splitFile(load, info.getFileId(), replicationDegree);
+				ArrayList<byte[]> splitted = peer.getFs().splitFile(load);
 				
 				info.setChunkNo(splitted.size());
 					
@@ -50,7 +48,7 @@ public class BackupInitiator implements Runnable {
 				System.out.println("Splited size " + splitted.size());
 				for(int i = 0; i < splitted.size(); i++ ) {
 					messageHeader.put(Field.CHUNK_NO, Integer.toString(i));
-					Message putchunk = new Message(messageHeader, splitted.get(i).getFileData());
+					Message putchunk = new Message(messageHeader, splitted.get(i));
 
 					sendPackage(putchunk);
 

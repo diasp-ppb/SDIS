@@ -35,6 +35,7 @@ public class ControlChannel extends Channel{
 
 			switch (received.getType()) {
 			case "STORED":
+				System.out.println("STORED");
 				new Thread(new UpdateRequest(peer, received)).start();
 				break;
 			case "GETCHUNK":

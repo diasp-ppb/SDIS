@@ -2,8 +2,6 @@ package protrocols;
 
 import java.net.DatagramPacket;
 import java.util.EnumMap;
-
-import chunk.Chunk;
 import filesystem.Database;
 import filesystem.Metadata;
 import peer.Peer;
@@ -20,11 +18,10 @@ public class BackupProtocol implements Runnable {
 	}
 	
 	private void saveChunk(Message msg) {
-		Chunk chunk = new Chunk(msg.getChunkNo(), msg.getFileId(), msg.getReplicationDeg(), msg.getData());
-		System.out.println(msg.getData().length + " " +chunk.toString());
 		
 		int storageId  = peer.getDB().getFileStorageId(msg.getFileId());
-		peer.getFs().saveChunk(chunk, storageId);
+		
+		peer.getFs().saveChunk(storageId,msg.getChunkNo(),msg.getData());
 	}
 	
 	private Message buildStoredMessage(Message originalMsg) {
@@ -65,7 +62,9 @@ public class BackupProtocol implements Runnable {
 		
 		Database db = peer.getDB();
 		
-		if(db.chunkOnDB(chunkKey)) {
+		
+		//TODO remover 2º condiçao 
+		if(db.chunkOnDB(chunkKey) && db.getChunkInfo(chunkKey).getCurrentReplication() != 0) {
 				return false;
 		}
 		else {

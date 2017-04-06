@@ -7,8 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import chunk.Chunk;
 import utils.Message;
 
 public class FileSystem {
@@ -124,9 +122,9 @@ public class FileSystem {
 		return data;
 	}
 
-	public void saveChunk(Chunk ck, int fileStoreId) {
+	public void saveChunk(int fileStoreId, int chunkNo,byte[] data) {
 		String fileChunks = chunkDir + fileStoreId + "/";
-		String path = fileChunks + ck.getChunkNo();
+		String path = fileChunks + chunkNo;
 		if(! directoryExist(fileChunks)){
 			File theDir = new File(fileChunks);
 			theDir.mkdir();
@@ -139,11 +137,9 @@ public class FileSystem {
 				e.printStackTrace();
 			}
 		}
-
 		try {
 			FileOutputStream out = new FileOutputStream(newfile);
-			System.out.println("DATA STORED: " + ck.getFileData().length);
-			out.write(ck.getFileData());
+			out.write(data);
 			out.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -162,35 +158,30 @@ public class FileSystem {
 		}
 	}
 
-	public  ArrayList<Chunk> splitFile( File file ,String fileHash, int repDegree) throws IOException {	
-		ArrayList<Chunk> result = new ArrayList<Chunk>();			
-		int chunkCount = 0;
-		byte buffer[] = new byte[Chunk.MAX_LENGTH];
+	public  ArrayList<byte[]> splitFile(File file) throws IOException {	
+		
+		ArrayList<byte[]> result = new ArrayList<byte[]>();			
+		byte buffer[] = new byte[Message.body_MAX_LENGHT];
 		boolean multipleSize = false;
 
 		FileInputStream in = new FileInputStream(file);
 		int eof = in.read(buffer);
 
-		for(;eof != -1;chunkCount++) {
-
-			if(eof % Chunk.MAX_LENGTH == 0) {
+		while(eof != -1) {
+			if(eof % Message.body_MAX_LENGHT == 0) {
 				multipleSize = true;
 			} else
 				multipleSize = false;
 
-			result.add(new Chunk(chunkCount, fileHash, repDegree, Arrays.copyOf(buffer, eof)));
-			//System.out.println(eof);
+			result.add(Arrays.copyOf(buffer, eof));
 			eof = in.read(buffer);
 		}
 
-		//System.out.println("MULIPLO: " + multipleSize);
-
 		if(multipleSize) {
-			result.add(new Chunk(chunkCount, new String(fileHash),repDegree,new byte[0]));
+			result.add(new byte[0]);
 		}
 
 		in.close();
-		//System.out.println(result.size());
 		return result;
 	}
 	

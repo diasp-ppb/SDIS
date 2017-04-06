@@ -3,8 +3,6 @@ package protrocols;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.EnumMap;
-
-import chunk.Chunk;
 import filesystem.Database;
 import filesystem.FileId;
 import filesystem.Metadata;
