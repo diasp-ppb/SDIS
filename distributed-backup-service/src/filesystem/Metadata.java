@@ -19,7 +19,11 @@ public class Metadata {
 	public int getMinReplication() {
 		return minReplication;
 	}
-
+	
+	public int getChunkSize () {
+		return chunkSize;
+	}
+	
 	public void setCurrentReplication(int currentReplication) {
 		this.currentReplication = currentReplication;
 	}
@@ -28,7 +32,5 @@ public class Metadata {
 		this.minReplication = minReplication;
 	}
 
-	public int getChunkSize () {
-		return chunkSize;
-	}
+	
 }

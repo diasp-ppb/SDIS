@@ -43,7 +43,8 @@ public class BackupInitiator implements Runnable {
 				messageHeader.put(Field.SENDER_ID, peer.getId());
 				messageHeader.put(Field.FILE_ID, fileid);
 				messageHeader.put(Field.REPLICATION_DEGREE, Integer.toString(replicationDegree));
-
+				
+				System.out.println("Splited size " + splitted.size());
 				for(int i = 0; i < splitted.size(); i++ ) {
 					messageHeader.put(Field.CHUNK_NO, Integer.toString(i));
 					Message putchunk = new Message(messageHeader, splitted.get(i).getFileData());

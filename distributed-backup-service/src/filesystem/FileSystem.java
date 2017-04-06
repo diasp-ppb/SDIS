@@ -162,7 +162,7 @@ public class FileSystem {
 		}
 	}
 
-	public  ArrayList<Chunk> splitFile( File file ,byte[] filehash, int repDegree) throws IOException {	
+	public  ArrayList<Chunk> splitFile( File file ,String fileHash, int repDegree) throws IOException {	
 		ArrayList<Chunk> result = new ArrayList<Chunk>();			
 		int chunkCount = 0;
 		byte buffer[] = new byte[Chunk.MAX_LENGTH];
@@ -178,7 +178,7 @@ public class FileSystem {
 			} else
 				multipleSize = false;
 
-			result.add(new Chunk(chunkCount, new String(filehash), repDegree, Arrays.copyOf(buffer, eof)));
+			result.add(new Chunk(chunkCount, fileHash, repDegree, Arrays.copyOf(buffer, eof)));
 			//System.out.println(eof);
 			eof = in.read(buffer);
 		}
@@ -186,7 +186,7 @@ public class FileSystem {
 		//System.out.println("MULIPLO: " + multipleSize);
 
 		if(multipleSize) {
-			result.add(new Chunk(chunkCount, new String(filehash),repDegree,new byte[0]));
+			result.add(new Chunk(chunkCount, new String(fileHash),repDegree,new byte[0]));
 		}
 
 		in.close();

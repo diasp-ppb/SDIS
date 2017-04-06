@@ -97,7 +97,7 @@ public class RestoreInitiator implements Runnable {
 		peer.getFs().restoreFile(data, file);
 		
 
-		peer.getRestoreChannel().removerestoreInitiator(new String(fileInfo.getFileId(), StandardCharsets.US_ASCII)); //TODO
+		peer.getRestoreChannel().removerestoreInitiator(fileInfo.getFileId()); //TODO
 		System.out.println("Restore " + file + " completed");
 	}
 

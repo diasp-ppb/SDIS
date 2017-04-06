@@ -10,6 +10,8 @@ import java.nio.file.attribute.FileOwnerAttributeView;
 import java.nio.file.attribute.UserPrincipal;
 import java.security.NoSuchAlgorithmException;
 
+import javax.xml.bind.DatatypeConverter;
+
 import utils.Utils;
 
 public class FileId {
@@ -21,7 +23,7 @@ public class FileId {
 	private int chunkNo;
 	private int replicationDegree;
 	
-	private byte[] fileId;
+	private String fileId;
 		
 	public FileId(File file, int replicationDegree) {
 		this.name = file.getName();
@@ -50,7 +52,7 @@ public class FileId {
 	}
 	
 	private void hash() throws NoSuchAlgorithmException {
-		fileId = Utils.sha256(name + owner + lastModification + "" + fileSize);
+		fileId = DatatypeConverter.printBase64Binary(Utils.sha256(name + owner + lastModification + "" + fileSize));
 	}
 	
 	public String getName() {
@@ -61,7 +63,7 @@ public class FileId {
 		return fileSize;
 	}
 	
-	public byte[] getFileId() {
+	public String getFileId() {
 		return fileId;
 	}
 	
