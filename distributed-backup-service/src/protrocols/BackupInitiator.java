@@ -36,7 +36,10 @@ public class BackupInitiator implements Runnable {
 				ArrayList<Chunk> splitted = peer.getFs().splitFile(load, info.getFileId(), replicationDegree);
 				
 				info.setChunkNo(splitted.size());
-
+					
+				
+				System.out.println("SPITTED" + splitted.size());
+				
 				EnumMap<Field, String> messageHeader = new EnumMap<Field, String>(Field.class);
 				messageHeader.put(Field.MESSAGE_TYPE, "PUTCHUNK");
 				messageHeader.put(Field.VERSION, peer.getProtocolVersion());
@@ -71,8 +74,11 @@ public class BackupInitiator implements Runnable {
 
 	private void sendPackage(Message putchunk) {
 		int attempts = 0;
-		String chunkKey = putchunk.getFileId() + putchunk.getFileId();
-
+		String chunkKey = putchunk.getFileId() + putchunk.getChunkNo();
+		
+		System.out.println(putchunk.getFileId());
+		
+		
 		peer.getDB().saveChunkInfo(chunkKey, new Metadata(0, putchunk.getReplicationDeg(), putchunk.getData().length));
 
 		while (attempts <= MAX_TRIES) {
@@ -83,7 +89,6 @@ public class BackupInitiator implements Runnable {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			
 			if (peer.getDB().desiredReplication(chunkKey)) {
 				return;
 			}
