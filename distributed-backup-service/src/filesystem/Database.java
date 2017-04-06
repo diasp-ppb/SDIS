@@ -52,7 +52,7 @@ public class Database {
 
 	public void update(int replication, String key) {
 		Metadata old = getChunkInfo(key);
-		saveChunkInfo(key, new Metadata(old.getCurrentReplication() + replication, old.getMinReplication(), old.getStored()));
+		saveChunkInfo(key, new Metadata(old.getCurrentReplication() + replication, old.getMinReplication(), old.getChunkSize()));
 	}
 	
 	public void registerChunkSent(String chunkId) {
@@ -95,11 +95,25 @@ public class Database {
 	public int getFileStorageId(String  fileId) {
 		return fileSystemId.get(fileId);
 	}
+	
 	public void removeFile(String fileId, String path) {
 		if(fileId != null)
 		fileSystemId.remove(fileId);
 		if(path != null)
 			savedFiles.remove(path);
+	}
+	
+	public String ListChunks() {
+		
+		String out = "";
+		
+		for(String key : chunksInfo.keySet()) {
+			Metadata value = chunksInfo.get(key);
+			out +=key + " with size " + value.getChunkSize() +  " bytes and replication "+ value.getCurrentReplication();
+			out +="\n";
+		}
+		
+		return out;
 	}
 }
 

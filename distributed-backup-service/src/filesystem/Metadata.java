@@ -4,12 +4,12 @@ public class Metadata {
 	
 	private int currentReplication;
 	private int minReplication;
-	private boolean stored;
+	private int chunkSize;
 	
-	public Metadata( int currentReplication, int minReplication, boolean stored) {
+	public Metadata( int currentReplication, int minReplication, int chunkSize) {
 		this.currentReplication = currentReplication;
 		this.minReplication= minReplication;
-		this.stored = stored;
+		this.chunkSize = chunkSize;
 	}
 
 	public int getCurrentReplication() {
@@ -20,7 +20,6 @@ public class Metadata {
 		return minReplication;
 	}
 
-
 	public void setCurrentReplication(int currentReplication) {
 		this.currentReplication = currentReplication;
 	}
@@ -28,12 +27,8 @@ public class Metadata {
 	public void setMinReplication(int minReplication) {
 		this.minReplication = minReplication;
 	}
-	
-	public void setStored(boolean bool) {
-		stored = bool;
-	}
-	
-	public boolean getStored() {
-		return stored;
+
+	public int getChunkSize () {
+		return chunkSize;
 	}
 }

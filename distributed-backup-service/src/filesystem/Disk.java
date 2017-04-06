@@ -44,4 +44,8 @@ public class Disk {
 	public int getMaxSize() {
 		return maxSize;
 	}
+	
+	public String toString() {
+		return "The disk has a max size of " + maxSize + " kB of which " + currSize + " kB are in use.\n";
+	}
 }

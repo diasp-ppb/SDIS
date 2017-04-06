@@ -30,7 +30,7 @@ public class BackupInitiator implements Runnable {
 		if (peer.getFs().fileExist(filePath)) {
 			try {
 				File load = new File(filePath);
-				FileId info = new FileId(load);
+				FileId info = new FileId(load, replicationDegree);
 				String fileid = new String(info.getFileId());
 				
 				ArrayList<Chunk> splitted = peer.getFs().splitFile(load, info.getFileId(), replicationDegree);
@@ -72,7 +72,7 @@ public class BackupInitiator implements Runnable {
 		int attempts = 0;
 		String chunkKey = putchunk.getFileId() + putchunk.getFileId();
 
-		peer.getDB().saveChunkInfo(chunkKey, new Metadata(0, putchunk.getReplicationDeg(), false));
+		peer.getDB().saveChunkInfo(chunkKey, new Metadata(0, putchunk.getReplicationDeg(), putchunk.getData().length));
 
 		while (attempts <= MAX_TRIES) {
 			peer.getBackupChannel().sendMessage(putchunk);

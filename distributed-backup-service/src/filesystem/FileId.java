@@ -19,26 +19,11 @@ public class FileId {
 	private long lastModification;
 	
 	private int chunkNo;
-	
+	private int replicationDegree;
 	
 	private byte[] fileId;
-	
-	public FileId(String name, long fileSize, String owner, long lastModification) {
-		this.name = name;
-		this.fileSize = fileSize;
-		this.owner = owner;
-		this.lastModification = lastModification;
 		
-		this.chunkNo = 0;
-		
-		try {
-			hash();
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public FileId(File file) {
+	public FileId(File file, int replicationDegree) {
 		this.name = file.getName();
 		this.fileSize = file.length();
 		
@@ -54,7 +39,9 @@ public class FileId {
 		this.lastModification  = file.lastModified();
 		
 		this.chunkNo = 0;
-
+		
+		this.replicationDegree = replicationDegree;
+		
 		try {
 			hash();
 		} catch (NoSuchAlgorithmException e) {
@@ -84,6 +71,14 @@ public class FileId {
 	
 	public int getChunkNo() {
 		return chunkNo;
+	}
+	
+	public int getReplicationDegree() {
+		return replicationDegree;
+	}
+	
+	public String toString() {
+		return name + " with id " + fileId + " and replication degree of " + replicationDegree; 
 	}
 	
 }

@@ -65,15 +65,11 @@ public class BackupProtocol implements Runnable {
 		
 		Database db = peer.getDB();
 		
-		if(db.chunkOnDB(chunkKey)){
-			if(!db.getChunkInfo(chunkKey).getStored()){
-				db.update(1, chunkKey);
-			}
-			else
+		if(db.chunkOnDB(chunkKey)) {
 				return false;
 		}
 		else {
-			db.saveChunkInfo(chunkKey,new Metadata(1,msg.getReplicationDeg(),true));
+			db.saveChunkInfo(chunkKey,new Metadata(1,msg.getReplicationDeg(),msg.getData().length));
 		}
 		
 		if(! db.FileStored(msg.getFileId())) {

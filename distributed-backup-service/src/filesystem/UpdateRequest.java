@@ -19,7 +19,7 @@ public class UpdateRequest implements Runnable {
 		if (db.chunkOnDB(chunkKey)) {
 			db.update(1, chunkKey);
 		} else {
-			db.saveChunkInfo(chunkKey, new Metadata(1,1,false));
+			db.saveChunkInfo(chunkKey, new Metadata(1,1,msg.getData().length));
 		}
 	}
 	
