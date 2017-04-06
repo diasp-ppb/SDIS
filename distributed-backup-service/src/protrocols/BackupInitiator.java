@@ -29,7 +29,13 @@ public class BackupInitiator implements Runnable {
 			try {
 				File load = new File(filePath);
 				FileId info = new FileId(load, replicationDegree);
-				String fileid = new String(info.getFileId());
+				String fileid = info.getFileId();
+				
+				if(!peer.getDisk().reserveSpace(info.getFileSize())) {
+					
+				   System.out.println("Not enought space in disk");
+				   return;
+				}
 				
 				ArrayList<byte[]> splitted = peer.getFs().splitFile(load);
 				

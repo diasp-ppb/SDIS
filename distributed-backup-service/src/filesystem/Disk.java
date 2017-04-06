@@ -1,51 +1,59 @@
 package filesystem;
 
 public class Disk {
-	
-	private int currSize;
-	private int maxSize;
-	
+
+	private long currSize;
+	private long maxSize;
+
 	public Disk() {
 		maxSize = Integer.MAX_VALUE;
 		currSize = 0;
 	}
-	
+
 	public Disk(int size) {
 		this.maxSize = size;
 		this.currSize = 0;
 	}
-	
-	public boolean enoughSpace(int filesize) {
-		return currSize + filesize >= maxSize;
+
+	public boolean reserveSpace(long filesize){
+		if(enoughSpace(filesize)) {
+			currSize+=filesize;
+			return true;
+		}
+		return false;
 	}
-	
-	public boolean resizeDisk(int newSize) {
+
+	public boolean enoughSpace(long filesize) {
+		return currSize + filesize <= maxSize;
+	}
+
+	public boolean resizeDisk(long newSize) {
 		if (newSize < currSize) {
 			return false;
 		}
-		
+
 		maxSize = newSize;
 		return true;
 	}
-	
-	public boolean increaseSize(int increment) {
+
+	public boolean increaseSize(long increment) {
 		if (enoughSpace(increment)) {
 			currSize += increment;
 			return true;
 		}
-		
+
 		return false;
 	}
-	
-	public int getCurrSize() {
+
+	public long getCurrSize() {
 		return currSize;
 	}
-	
-	public int getMaxSize() {
+
+	public long getMaxSize() {
 		return maxSize;
 	}
-	
+
 	public String toString() {
-		return "The disk has a max size of " + maxSize + " kB of which " + currSize + " kB are in use.\n";
+		return "The disk has a max size of " + maxSize + " kB of which " + currSize/1000 + " kB are in use.\n";
 	}
 }
