@@ -15,12 +15,16 @@ public class Disk {
 		this.currSize = 0;
 	}
 
-	public boolean reserveSpace(long filesize){
+	public boolean reserveSpace(long filesize) {
 		if(enoughSpace(filesize)) {
 			currSize+=filesize;
 			return true;
 		}
 		return false;
+	}
+	
+	public void releaseSpace(long filesize) {
+		currSize -= filesize;
 	}
 
 	public boolean enoughSpace(long filesize) {

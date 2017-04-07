@@ -42,6 +42,7 @@ public class BackupProtocol implements Runnable {
 		System.out.println("ChunkNo:" + msg.getChunkNo());
 		if (msg.getType().equals("PUTCHUNK")) {
 			if (updateDB(msg)) {
+				
 				saveChunk(msg);
 				Message response = buildStoredMessage(msg);
 				System.out.println("OUT " + response.toString());
@@ -68,6 +69,12 @@ public class BackupProtocol implements Runnable {
 				return false;
 		}
 		else {
+			
+			if(!peer.getDisk().reserveSpace(msg.getData().length)) {
+				   System.out.println("Not enought space in disk");
+				   return false;
+				}
+			
 			db.saveChunkInfo(chunkKey,new Metadata(1,msg.getReplicationDeg(),msg.getData().length));
 		}
 		

@@ -33,16 +33,16 @@ public class DeleteProtocol implements Runnable {
 		
 		File folder = new File(chunksDir);
 		
+		System.out.println(folder.listFiles().length);
 		for(File file: folder.listFiles()) {
 			DB.removeChunk(msg.getFileId()+file.getName());
+			peer.getDisk().releaseSpace(file.length());
 	        file.delete();
 		}
 		
 		DB.removeFile(msg.getFileId(), null);
 		
-		if(!folder.delete()) {
-			System.err.println("Failed do DELETE all info");
-		}
+		folder.delete();
 		
 		System.out.println("DELETED");
 	}
