@@ -74,15 +74,16 @@ public class Reclaim implements Runnable {
 
 		Message removed = buildRemovedMessage(fileId, chunkNo);
 		peer.getDB().removeChunk(toRemove);
+		peer.getDisk().releaseSpace(chunk.getChunkSize());
 		peer.getControlChannel().sendMessage(removed);
 	}
 	
 	@Override
 	public void run() {
 		if (!peer.getDisk().resizeDisk(maxSize)) {
-			// Remove files until disk.currSize <= maxSize
 			long sizeToRemove = peer.getDisk().getCurrSize() - maxSize;
 			removeChunks(sizeToRemove);
+			peer.getDisk().resizeDisk(maxSize);
 		}
 	}
 }

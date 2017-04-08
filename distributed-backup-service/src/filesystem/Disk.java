@@ -6,7 +6,7 @@ public class Disk {
 	private long maxSize;
 
 	public Disk() {
-		maxSize = Integer.MAX_VALUE;
+		maxSize = 10000000;
 		currSize = 0;
 	}
 
@@ -16,10 +16,11 @@ public class Disk {
 	}
 
 	public boolean reserveSpace(long filesize) {
-		if(enoughSpace(filesize)) {
-			currSize+=filesize;
+		if (enoughSpace(filesize)) {
+			currSize += filesize;
 			return true;
 		}
+		
 		return false;
 	}
 	
@@ -32,21 +33,15 @@ public class Disk {
 	}
 
 	public boolean resizeDisk(long newSize) {
+		System.out.println(newSize);
+		System.out.println(currSize);
 		if (newSize < currSize) {
 			return false;
 		}
 
 		maxSize = newSize;
+		System.out.println(maxSize);
 		return true;
-	}
-
-	public boolean increaseSize(long increment) {
-		if (enoughSpace(increment)) {
-			currSize += increment;
-			return true;
-		}
-
-		return false;
 	}
 
 	public long getCurrSize() {
