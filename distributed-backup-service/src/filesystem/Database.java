@@ -1,5 +1,7 @@
 package filesystem;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 
 public class Database {
@@ -47,6 +49,19 @@ public class Database {
 	
 	public void updateReplicationDegree(int change, String key) {
 		getChunkInfo(key).updateReplicationDegree(change);
+	}
+	
+	public ArrayList<ChunkData> getChunksOrderedByReplication() {
+		ArrayList<ChunkData> chunkList = new ArrayList<ChunkData>();
+		
+		chunkList.addAll(storedChunks.values());
+		chunkList.sort(Comparator.comparing(ChunkData::getChunkKey));
+		
+		for (ChunkData chunk : chunkList) {
+			System.out.println(chunk.getCurrentReplication());
+		}
+		
+		return chunkList;
 	}
 	
 	// Methods related to files sent by peer

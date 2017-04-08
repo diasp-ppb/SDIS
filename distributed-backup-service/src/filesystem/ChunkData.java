@@ -1,19 +1,24 @@
 package filesystem;
 
 public class ChunkData {
-	
+	private String chunkKey;
 	private int currentReplication;
 	private int minReplication;
 	private int chunkSize;
 	private String fileId;
 	private int chunkNo;
 	
-	public ChunkData(int currentReplication, int minReplication, int chunkSize, String fileId, int chunkNo) {
+	public ChunkData(String chunkKey, int currentReplication, int minReplication, int chunkSize, String fileId, int chunkNo) {
+		this.chunkKey = chunkKey;
 		this.currentReplication = currentReplication;
 		this.minReplication = minReplication;
 		this.chunkSize = chunkSize;
 		this.fileId = fileId;
 		this.chunkNo = chunkNo;
+	}
+	
+	public String getChunkKey() {
+		return chunkKey;
 	}
 
 	public int getCurrentReplication() {
@@ -24,7 +29,7 @@ public class ChunkData {
 		return minReplication;
 	}
 	
-	public int getChunkSize () {
+	public int getChunkSize() {
 		return chunkSize;
 	}
 	
