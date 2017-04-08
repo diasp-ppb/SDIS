@@ -4,8 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import filesystem.Database;
-import filesystem.FileId;
-import filesystem.Metadata;
+import filesystem.FileData;
+import filesystem.ChunkData;
 import peer.Peer;
 import utils.Message;
 import utils.Message.Field;
@@ -36,7 +36,7 @@ public class DeleteInitiator implements Runnable {
 	public void run() {
 		Database DB = peer.getDB();
 		
-		FileId fileInfo = DB.getFileId(filePath);
+		FileData fileInfo = DB.getFileData(filePath);
 
 		if(fileInfo == null) return;
 		

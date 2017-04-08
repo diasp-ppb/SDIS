@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.EnumMap;
 
-import filesystem.FileId;
+import filesystem.FileData;
 import peer.Peer;
 import utils.Message;
 import utils.Message.Field;
@@ -14,7 +14,7 @@ import utils.Message.Field;
 public class RestoreInitiator implements Runnable {
 	private Peer peer;
 	private String filePath;
-	private FileId fileInfo;
+	private FileData fileInfo;
 	private String fileId;
 
 	private int numberChunks;
@@ -53,7 +53,7 @@ public class RestoreInitiator implements Runnable {
 
 	@Override
 	public void run() {
-		fileInfo = peer.getDB().getFileId(filePath);
+		fileInfo = peer.getDB().getFileData(filePath);
 		
 		fileId = new String( fileInfo.getFileId());
 		

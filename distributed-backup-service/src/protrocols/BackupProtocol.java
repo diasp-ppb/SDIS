@@ -3,7 +3,7 @@ package protrocols;
 import java.net.DatagramPacket;
 import java.util.EnumMap;
 import filesystem.Database;
-import filesystem.Metadata;
+import filesystem.ChunkData;
 import peer.Peer;
 import utils.Message;
 import utils.Message.Field;
@@ -71,11 +71,11 @@ public class BackupProtocol implements Runnable {
 		else {
 			
 			if(!peer.getDisk().reserveSpace(msg.getData().length)) {
-				   System.out.println("Not enought space in disk");
+				   System.out.println("Not enough space in disk");
 				   return false;
 				}
 			
-			db.saveChunkInfo(chunkKey,new Metadata(1,msg.getReplicationDeg(),msg.getData().length));
+			db.saveChunkInfo(chunkKey,new ChunkData(1, msg.getReplicationDeg(), msg.getData().length, msg.getFileId(), msg.getChunkNo()));
 		}
 		
 		if(! db.FileStored(msg.getFileId())) {
