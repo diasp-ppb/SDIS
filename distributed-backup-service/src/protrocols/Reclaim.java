@@ -59,7 +59,10 @@ public class Reclaim implements Runnable {
 	
 	private void removeChunks(ArrayList<String> toRemove) {
 		for (String chunkKey : toRemove) {
-			FileData fileData = peer.getDB().getSentFiles().get(chunkKey);
+			ChunkData chunk = peer.getDB().getChunkInfo(chunkKey));
+			String fileId = chunk.getFileId();
+			int chunkNo = chunk.getChunkNo();
+			
 			// Build REMOVED message (fileData.getFileId, chunkNo);
 			// Remove Chunk from DB
 			// Send removed message
