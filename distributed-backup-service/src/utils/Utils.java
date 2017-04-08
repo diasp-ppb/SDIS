@@ -35,6 +35,6 @@ public class Utils {
 	}
 	
 	public static int randomNumber(int min, int max) {
-		return randomGenerator.nextInt() % (max-min) + min;
+		return Math.abs(randomGenerator.nextInt() % (max-min) + min);
 	}
 }
