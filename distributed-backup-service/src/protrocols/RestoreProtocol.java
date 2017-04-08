@@ -7,6 +7,7 @@ import java.util.EnumMap;
 import peer.Peer;
 import utils.Message;
 import utils.Message.Field;
+import utils.Utils;
 
 public class RestoreProtocol implements Runnable {
 	private Peer peer;
@@ -63,7 +64,7 @@ public class RestoreProtocol implements Runnable {
 		Message chunkMessage = buildChunkMessage(chunk);
 		
 		try {
-			Thread.sleep(400);
+			Thread.sleep(Utils.randomNumber(0, 400));
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

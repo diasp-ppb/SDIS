@@ -34,7 +34,7 @@ public class Utils {
 		return digest.digest(text.getBytes(StandardCharsets.UTF_8));
 	}
 	
-	public int randomNumber(int min, int max) {
+	public static int randomNumber(int min, int max) {
 		return randomGenerator.nextInt() % (max-min) + min;
 	}
 }

@@ -7,6 +7,7 @@ import filesystem.ChunkData;
 import peer.Peer;
 import utils.Message;
 import utils.Message.Field;
+import utils.Utils;
 
 public class BackupProtocol implements Runnable {
 	private Peer peer;
@@ -47,7 +48,7 @@ public class BackupProtocol implements Runnable {
 				Message response = buildStoredMessage(msg);
 				System.out.println("OUT " + response.toString());
 				try {
-					Thread.sleep(400);
+					Thread.sleep(Utils.randomNumber(0, 400));
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
