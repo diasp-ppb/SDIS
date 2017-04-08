@@ -3,18 +3,18 @@ package peer;
 import java.util.HashMap;
 
 import filesystem.Database;
-import filesystem.FileId;
-import filesystem.Metadata;
+import filesystem.FileData;
+import filesystem.ChunkData;
 
 public class State {
 	private Peer peer;
 	private Database DB;
-	private HashMap<String, FileId> savedFiles;
+	private HashMap<String, FileData> savedFiles;
 	
 	public State(Peer peer) {
 		this.peer = peer;
 		this.DB = peer.getDB();
-		savedFiles = peer.getDB().getSavedFiles();
+		savedFiles = peer.getDB().getSentFiles();
 		
 	}
 	
@@ -22,13 +22,13 @@ public class State {
 		String info = "Peer " + peer.getId() + " state:\n";
 		
 		info += "The peer has requested the backup of " + savedFiles.size() + " files:\n";
-		for (FileId file : savedFiles.values()) {
+		for (FileData file : savedFiles.values()) {
 			info += file.toString() + "\n";
 		}
 		
 		info += "\n";
 		
-		info += "Currently it has stored " + DB.getChunksInfo().size()+ " chunks.\n";
+		info += "Currently it has stored " + DB.getStoredChunks().size()+ " chunks.\n";
 		
 		info += DB.ListChunks();
 		

@@ -21,7 +21,7 @@ public class UpdateRequest implements Runnable {
 		
 		if (db.chunkOnDB(chunkKey)) {
 			
-			db.update(1, chunkKey);
+			db.updateReplicationDegree(1, chunkKey);
 		} 
 	}
 	

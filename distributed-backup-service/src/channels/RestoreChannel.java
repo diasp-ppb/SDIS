@@ -5,7 +5,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.HashMap;
 
-import filesystem.Metadata;
+import filesystem.ChunkData;
 import filesystem.UpdateRequest;
 import peer.Peer;
 import protrocols.BackupProtocol;

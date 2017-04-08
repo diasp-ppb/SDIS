@@ -17,8 +17,7 @@ public class RestoreProtocol implements Runnable {
 		this.peer = peer;
 	}
 	
-	private byte[] loadChunk(String fileId,  int chunkNo) {
-		
+	private byte[] loadChunk(String fileId,  int chunkNo) {	
 		byte[] chunk;
 		
 		System.out.println(fileId);
@@ -27,9 +26,7 @@ public class RestoreProtocol implements Runnable {
 		}
 		
 		int storageId = peer.getDB().getFileStorageId(fileId);
-		
-		
-		
+			
 		try {
 			chunk = peer.getFs().loadChunk(storageId, chunkNo);
 		} catch (FileNotFoundException e) {
@@ -53,13 +50,8 @@ public class RestoreProtocol implements Runnable {
 	}
 	
 	private void handlePacket() {
-		
-		
-		
 		System.out.println("restore " + msg.toString());
 		String chunkId = msg.getFileId() + msg.getChunkNo();
-		
-		
 		
 		byte[] chunk = loadChunk(msg.getFileId() , msg.getChunkNo());
 		
@@ -69,8 +61,6 @@ public class RestoreProtocol implements Runnable {
 		}
 		
 		Message chunkMessage = buildChunkMessage(chunk);
-		
-	
 		
 		try {
 			Thread.sleep(400);

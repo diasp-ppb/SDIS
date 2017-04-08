@@ -1,15 +1,19 @@
 package filesystem;
 
-public class Metadata {
+public class ChunkData {
 	
 	private int currentReplication;
 	private int minReplication;
 	private int chunkSize;
+	private String fileId;
+	private int chunkNo;
 	
-	public Metadata( int currentReplication, int minReplication, int chunkSize) {
+	public ChunkData(int currentReplication, int minReplication, int chunkSize, String fileId, int chunkNo) {
 		this.currentReplication = currentReplication;
-		this.minReplication= minReplication;
+		this.minReplication = minReplication;
 		this.chunkSize = chunkSize;
+		this.fileId = fileId;
+		this.chunkNo = chunkNo;
 	}
 
 	public int getCurrentReplication() {
@@ -31,6 +35,9 @@ public class Metadata {
 	public void setMinReplication(int minReplication) {
 		this.minReplication = minReplication;
 	}
-
+	
+	public void updateReplicationDegree(int change) {
+		this.currentReplication += change;
+	}
 	
 }

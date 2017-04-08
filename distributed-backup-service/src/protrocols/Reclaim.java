@@ -5,8 +5,8 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import filesystem.FileId;
-import filesystem.Metadata;
+import filesystem.FileData;
+import filesystem.ChunkData;
 import peer.Peer;
 import utils.Message;
 import utils.Message.Field;
@@ -36,10 +36,10 @@ public class Reclaim implements Runnable {
 		long remainingDifference = sizeToRemove;
 		ArrayList<String> toRemove = new ArrayList<String>();
 		
-		HashMap<String, Metadata> chunks = peer.getDB().getChunksInfo();
+		HashMap<String, ChunkData> chunks = peer.getDB().getStoredChunks();
 		
-		for (Entry<String, Metadata> entry : chunks.entrySet()) {
-			Metadata chunk = entry.getValue();
+		for (Entry<String, ChunkData> entry : chunks.entrySet()) {
+			ChunkData chunk = entry.getValue();
 			if (chunk.getCurrentReplication() > chunk.getMinReplication()) {
 				toRemove.add(entry.getKey());
 				remainingDifference -= chunk.getChunkSize();
@@ -59,7 +59,7 @@ public class Reclaim implements Runnable {
 	
 	private void removeChunks(ArrayList<String> toRemove) {
 		for (String chunkKey : toRemove) {
-			FileId fileData = peer.getDB().getSavedFiles().get(chunkKey);
+			FileData fileData = peer.getDB().getSentFiles().get(chunkKey);
 			// Build REMOVED message (fileData.getFileId, chunkNo);
 			// Remove Chunk from DB
 			// Send removed message

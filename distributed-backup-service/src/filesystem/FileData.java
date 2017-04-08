@@ -14,7 +14,7 @@ import javax.xml.bind.DatatypeConverter;
 
 import utils.Utils;
 
-public class FileId {
+public class FileData {
 	private String name;
 	private long fileSize;
 	private String owner;
@@ -25,7 +25,7 @@ public class FileId {
 	
 	private String fileId;
 		
-	public FileId(File file, int replicationDegree) {
+	public FileData(File file, int replicationDegree) {
 		this.name = file.getName();
 		this.fileSize = file.length();
 		

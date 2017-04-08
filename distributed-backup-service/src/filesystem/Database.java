@@ -4,56 +4,63 @@ import java.util.HashMap;
 
 public class Database {
 
-	private HashMap<String, Metadata> chunksInfo;
-	private HashMap<String, FileId> savedFiles;
+	private HashMap<String, ChunkData> storedChunks;
+	private HashMap<String, FileData> sentFiles;
 	private HashMap<String, Boolean> chunkSent;
 	private HashMap<String, Integer>  fileSystemId;
 
 	private static int UNIQUE_ID = 0;
 
 	public Database() {
-		chunksInfo = new HashMap<String, Metadata>();
-		savedFiles = new HashMap<String, FileId>();
+		storedChunks = new HashMap<String, ChunkData>();
+		sentFiles = new HashMap<String, FileData>();
 		chunkSent = new HashMap<String, Boolean>();
 		fileSystemId = new HashMap<String, Integer>();
 	}
-
-	public Metadata getChunkInfo(String key) {
-		return getChunksInfo().get(key);
+	
+	// Methods related to chunks stored by peer
+	public HashMap<String, ChunkData> getStoredChunks() {
+		return storedChunks;
 	}
 
-	public void saveChunkInfo(String key, Metadata info) {
-		getChunksInfo().put(key, info);
+	public ChunkData getChunkInfo(String key) {
+		return storedChunks.get(key);
+	}
+
+	public void saveChunkInfo(String key, ChunkData info) {
+		storedChunks.put(key, info);
 	}
 
 	public boolean chunkOnDB(String key) {
-		return getChunksInfo().containsKey(key);
-	}
-
-	public FileId getFileId(String filepath) {
-		return savedFiles.get(filepath);
-	}
-	
-	public void saveStoredFile(String filepath, FileId fileinfo) {
-		savedFiles.put(filepath, fileinfo);
+		return storedChunks.containsKey(key);
 	}
 
 	public boolean desiredReplication(String key) {
-		if (!chunkOnDB(key))
+		if (!chunkOnDB(key)) {
 			return false;
+		}
 
-		Metadata info = getChunkInfo(key);
+		ChunkData chunk = getChunkInfo(key);
 		
-		if (info.getCurrentReplication() >= info.getCurrentReplication())
-			return true;
-
-		return false;
+		return chunk.getCurrentReplication() >= chunk.getMinReplication();
+	}
+	
+	public void updateReplicationDegree(int change, String key) {
+		getChunkInfo(key).updateReplicationDegree(change);
+	}
+	
+	// Methods related to files sent by peer
+	public HashMap<String, FileData> getSentFiles() {
+		return sentFiles;
 	}
 
-	public void update(int replication, String key) {
-		Metadata old = getChunkInfo(key);
-		saveChunkInfo(key, new Metadata(old.getCurrentReplication() + replication, old.getMinReplication(), old.getChunkSize()));
+	public FileData getFileData(String filepath) {
+		return sentFiles.get(filepath);
 	}
+	public void saveStoredFile(String filepath, FileData fileinfo) {
+		sentFiles.put(filepath, fileinfo);
+	}
+	
 	
 	public void registerChunkSent(String chunkId) {
 		chunkSent.put(chunkId, true);
@@ -72,15 +79,7 @@ public class Database {
 	
 	public void removeChunk(String chunkId) {
 		chunkSent.remove(chunkId);
-		chunksInfo.remove(chunkId);
-	}
-
-	public HashMap<String, Metadata> getChunksInfo() {
-		return chunksInfo;
-	}
-
-	public HashMap<String, FileId> getSavedFiles() {
-		return savedFiles;
+		storedChunks.remove(chunkId);
 	}
 	
 	public void addFileStored(String fileId){
@@ -101,15 +100,16 @@ public class Database {
 		if(fileId != null)
 		fileSystemId.remove(fileId);
 		if(path != null)
-			savedFiles.remove(path);
+			sentFiles.remove(path);
 	}
 	
+	// List Chunk Information
 	public String ListChunks() {
 		
 		String out = "";
 		
-		for(String key : chunksInfo.keySet()) {
-			Metadata value = chunksInfo.get(key);
+		for(String key : storedChunks.keySet()) {
+			ChunkData value = storedChunks.get(key);
 			out +=key + " with size " + value.getChunkSize() +  " bytes and replication "+ value.getCurrentReplication();
 			out +="\n";
 		}

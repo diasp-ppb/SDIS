@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.EnumMap;
-import filesystem.FileId;
-import filesystem.Metadata;
+import filesystem.FileData;
+import filesystem.ChunkData;
 import peer.Peer;
 import utils.Message;
 import utils.Message.Field;
@@ -28,7 +28,7 @@ public class BackupInitiator implements Runnable {
 		if (peer.getFs().fileExist(filePath)) {
 			try {
 				File load = new File(filePath);
-				FileId info = new FileId(load, replicationDegree);
+				FileData info = new FileData(load, replicationDegree);
 				String fileid = info.getFileId();
 				
 				
@@ -78,7 +78,7 @@ public class BackupInitiator implements Runnable {
 		System.out.println(putchunk.getFileId());
 		
 		
-		peer.getDB().saveChunkInfo(chunkKey, new Metadata(0, putchunk.getReplicationDeg(), putchunk.getData().length));
+		peer.getDB().saveChunkInfo(chunkKey, new ChunkData(0, putchunk.getReplicationDeg(), putchunk.getData().length, putchunk.getFileId(), putchunk.getChunkNo()));
 
 		while (attempts <= MAX_TRIES) {
 			peer.getBackupChannel().sendMessage(putchunk);
