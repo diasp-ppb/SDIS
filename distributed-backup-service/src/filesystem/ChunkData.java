@@ -28,16 +28,16 @@ public class ChunkData {
 		return chunkSize;
 	}
 	
-	public void setCurrentReplication(int currentReplication) {
-		this.currentReplication = currentReplication;
-	}
-
-	public void setMinReplication(int minReplication) {
-		this.minReplication = minReplication;
-	}
-	
 	public void updateReplicationDegree(int change) {
 		this.currentReplication += change;
+	}
+	
+	public String getFileId() {
+		return fileId;
+	}
+	
+	public int getChunkNo() {
+		return chunkNo;
 	}
 	
 }
