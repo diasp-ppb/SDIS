@@ -35,7 +35,6 @@ public class ControlChannel extends Channel{
 
 			switch (received.getType()) {
 			case "STORED":
-				System.out.println("STORED");
 				new Thread(new UpdateRequest(peer, received)).start();
 				break;
 			case "GETCHUNK":
@@ -45,6 +44,7 @@ public class ControlChannel extends Channel{
 				new Thread(new DeleteProtocol(peer,received)).start();
 				break;
 			case "REMOVED":
+				new Thread(new UpdateRequest(peer, received)).start();
 				break;
 			default:
 				break;

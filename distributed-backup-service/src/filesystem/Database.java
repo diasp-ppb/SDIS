@@ -48,7 +48,7 @@ public class Database {
 	}
 	
 	public void updateReplicationDegree(int change, String key) {
-		getChunkInfo(key).updateReplicationDegree(change);
+		storedChunks.get(key).updateReplicationDegree(change);
 	}
 	
 	public ArrayList<ChunkData> getChunksOrderedByReplication() {
