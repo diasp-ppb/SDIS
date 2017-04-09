@@ -1,9 +1,11 @@
 package filesystem;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -337,5 +339,66 @@ public class FileSystem {
 		
 	}
 	
-
+	
+	
+	public boolean loadDatabase(Database db) {
+		
+		String files = backupDir + "files";
+		String chunks = backupDir + "chunks";
+		
+		
+		if(!fileExist(chunks)) {
+			return false;
+		}
+		
+		if(!fileExist(files)) {	
+			return false;
+		}
+		
+		String line;
+		
+		try (BufferedReader br = new BufferedReader(new FileReader(new File(files)))) {
+		    
+		    while ((line = br.readLine()) != null) {
+		    	String [] parts = line.split("\\s+");
+		    	String path = parts[0];
+		    	String name = parts[1];
+		    	long filesize = Long.parseLong(parts[2]);
+		    	String owner = parts[3];
+		    	long lastModification = Long.parseLong(parts[4]);
+		    	int chunkNo = Integer.parseInt(parts[5]);
+		    	int replicationDegree = Integer.parseInt(parts[6]);
+		    	String fileId = parts[7];
+		    	db.saveStoredFile(path,new FileData(name,filesize,owner, lastModification, chunkNo,replicationDegree, fileId));
+		    }
+		} catch (FileNotFoundException e) {
+			return false;
+		} catch (IOException e) {
+			return false;
+		}
+		
+		
+		try (BufferedReader br = new BufferedReader(new FileReader(new File(chunks)))) {
+			 String [] parts = line.split("\\s+");
+			 
+			 String chunkKey = parts[0];
+			 int currentReplication = Integer.parseInt(parts[1]);
+		     int minReplication = Integer.parseInt(parts[2]);
+			 int chunkSize = Integer.parseInt(parts[3]);
+			 String fileId = parts[4];
+			 int chunkNo = Integer.parseInt(parts[5]);
+			 
+			 ChunkData newData = new ChunkData(chunkKey, currentReplication, minReplication, chunkSize, fileId, chunkNo);
+			 
+			 db.saveChunkInfo(chunkKey, newData);
+			
+		} catch (FileNotFoundException e) {
+			return false;
+		} catch (IOException e) {
+			return false;
+		}
+		
+		
+		return true;
+	}
 }
