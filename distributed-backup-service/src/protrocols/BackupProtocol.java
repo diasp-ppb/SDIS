@@ -17,6 +17,7 @@ public class BackupProtocol implements Runnable {
 	public BackupProtocol(Peer peer, DatagramPacket packet) {
 		this.packet = packet;
 		this.peer = peer;
+
 	}
 
 	private void saveChunk(Message msg) {
@@ -39,7 +40,7 @@ public class BackupProtocol implements Runnable {
 	}
 
 	private boolean updateDB(Message msg) {
-
+		
 		String chunkKey = msg.getFileId()+msg.getChunkNo();
 
 		Database db = peer.getDB();
@@ -64,6 +65,9 @@ public class BackupProtocol implements Runnable {
 		String chunkKey = msg.getFileId()+msg.getChunkNo();
 
 		Database db = peer.getDB();
+		
+		if(peer.getId().equals(msg.getSenderId()))
+				return false;
 
 		//check if chunk is stored
 		String path = FileSystem.chunkDir + msg.getFileId() + "/" + msg.getChunkNo();
@@ -85,10 +89,16 @@ public class BackupProtocol implements Runnable {
 			if(data.getChunkSize() == -1) {
 				data.setChunkSize(msg.getData().length);
 			}
+			
+			System.out.println(data.getCurrentReplication() );
 			if(data.getCurrentReplication() >= data.getMinReplication()) {
 				peer.getDisk().releaseSpace(msg.getData().length);
 				return false;
 			}
+			
+			data.setCurrentReplication(data.getCurrentReplication() + 1);
+			db.saveChunkInfo(chunkKey, data);
+			
 
 		}
 		else {
@@ -97,27 +107,23 @@ public class BackupProtocol implements Runnable {
 		return true;
 	}
 	private void handlePacketV2() {
-		System.out.println("backup v2");
+		
 		Message msg = new Message(packet);
-
+		
+		
 		if (msg.getType().equals("PUTCHUNK")) {
 			try {
-				Thread.sleep(Utils.randomNumber(0, 200));
+				Thread.sleep(Utils.randomNumber(0, 400));
 			} catch (InterruptedException e) {
-				System.out.println("fail bakcup 1º sleep");
+				System.out.println("fail backup 1º sleep");
 			}
 
 			if(updateDBV2(msg)) {
 				saveChunk(msg);
 				Message response = buildStoredMessage(msg);
 				System.out.println("OUT " + response.toString());
-				try {
-					Thread.sleep(Utils.randomNumber(0, 200));
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
 				peer.getControlChannel().sendMessage(response);
-				
+
 				System.out.println("Stored");
 			}
 		}
@@ -147,9 +153,11 @@ public class BackupProtocol implements Runnable {
 
 	@Override
 	public void run() {
-		if(peer.getProtocolVersion() == "1.0")
+		if(peer.getProtocolVersion().equals("1.0")) {
 			handlePacket();
-		else if(peer.getProtocolVersion() == "2.0")
+		}
+		else if(peer.getProtocolVersion().equals("2.0")) {
 			handlePacketV2();
+		}
 	}
 }

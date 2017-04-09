@@ -53,4 +53,7 @@ public class ChunkData {
 		this.chunkSize = chunkSize;
 	}
 	
+	public void setCurrentReplication (int currentReplication) {
+		this.currentReplication = currentReplication;
+	}
 }

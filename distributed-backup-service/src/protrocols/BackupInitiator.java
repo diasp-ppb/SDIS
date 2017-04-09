@@ -87,10 +87,11 @@ public class BackupInitiator implements Runnable {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			System.out.println(peer.getDB().getChunkInfo(chunkKey).getCurrentReplication());
 			if (peer.getDB().desiredReplication(chunkKey)) {
 				return;
 			}
-
+			
 			attempts++;
 		}
 		peer.getFs().saveDatabase(peer.getDB()); //TODO

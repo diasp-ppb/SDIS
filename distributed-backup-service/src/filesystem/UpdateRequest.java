@@ -27,6 +27,9 @@ public class UpdateRequest implements Runnable {
 	private void storedHandlerV2() {
 		Database db = peer.getDB();
 		
+		if(msg.getSenderId().equals(peer.getId()))
+			return ;
+		
 		String chunkKey = msg.getFileId() + msg.getChunkNo();
 				
 		if (db.chunkOnDB(chunkKey)) {
@@ -65,7 +68,12 @@ public class UpdateRequest implements Runnable {
 	private void handleMessage() {
 		switch (msg.getType()) {
 		case "STORED":
-			storedHandler();
+			if(peer.getProtocolVersion().equals("1.0")) {
+				storedHandler();
+			}
+			else if( peer.getProtocolVersion().equals("2.0")) {
+				storedHandlerV2();
+			}
 			break;
 		case "CHUNK":
 			chunkHandler();

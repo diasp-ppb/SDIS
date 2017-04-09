@@ -124,6 +124,10 @@ public class Message {
 		return Integer.parseInt(fields.get(Field.REPLICATION_DEGREE));
 	}
 	
+	public String getSenderId() {
+		return fields.get(Field.SENDER_ID);
+	}
+	
 	public byte[] getData() {
 		return body;
 	}
