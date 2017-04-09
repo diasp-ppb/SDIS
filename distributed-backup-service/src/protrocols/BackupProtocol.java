@@ -75,8 +75,8 @@ public class BackupProtocol implements Runnable {
 				   System.out.println("Not enough space in disk");
 				   return false;
 				}
-			
-			db.saveChunkInfo(chunkKey,new ChunkData(1, msg.getReplicationDeg(), msg.getData().length, msg.getFileId(), msg.getChunkNo()));
+
+			db.saveChunkInfo(chunkKey, new ChunkData(chunkKey, 1, msg.getReplicationDeg(), msg.getData().length, msg.getFileId(), msg.getChunkNo()));
 		}
 		
 		if(! db.FileStored(msg.getFileId())) {

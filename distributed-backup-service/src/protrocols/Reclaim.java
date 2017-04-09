@@ -3,9 +3,7 @@ package protrocols;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.Map.Entry;
 
-import filesystem.FileData;
 import filesystem.ChunkData;
 import peer.Peer;
 import utils.Message;
@@ -32,16 +30,16 @@ public class Reclaim implements Runnable {
 		return new Message(messageHeader);
 	}
 	
-	private ArrayList<String> chunksToRemove(long sizeToRemove) {
+	private void removeChunks(long sizeToRemove) {
 		long remainingDifference = sizeToRemove;
 		ArrayList<String> toRemove = new ArrayList<String>();
 		
 		HashMap<String, ChunkData> chunks = peer.getDB().getStoredChunks();
 		
-		for (Entry<String, ChunkData> entry : chunks.entrySet()) {
-			ChunkData chunk = entry.getValue();
+		// Removing Chunks with perceived replication degree > desired replication degree
+		for (ChunkData chunk : chunks.values()) {
 			if (chunk.getCurrentReplication() > chunk.getMinReplication()) {
-				toRemove.add(entry.getKey());
+				toRemove.add(chunk.getChunkKey());
 				remainingDifference -= chunk.getChunkSize();
 			}
 			
@@ -50,32 +48,42 @@ public class Reclaim implements Runnable {
 			}
 		}
 		
-		if (remainingDifference >= 0) {
-			// remove chunks with highest replication Degree TODO
+		for (String chunk : toRemove) {
+			removeChunk(chunk);
 		}
-		
-		return toRemove;		
+
+		// If still needed, remove chunks with the largest perceived replication degree
+		if (remainingDifference > 0) {
+			ArrayList<ChunkData> orderedChunks = peer.getDB().getChunksOrderedByReplication();
+			
+			for (int i = 0; i < orderedChunks.size() && remainingDifference > 0; i++) {
+				toRemove.add(orderedChunks.get(i).getChunkKey());
+				remainingDifference -= orderedChunks.get(i).getChunkSize();
+			}
+
+			for (String chunk : toRemove) {
+				removeChunk(chunk);
+			}
+		}	
 	}
 	
-	private void removeChunks(ArrayList<String> toRemove) {
-		for (String chunkKey : toRemove) {
-			ChunkData chunk = peer.getDB().getChunkInfo(chunkKey));
-			String fileId = chunk.getFileId();
-			int chunkNo = chunk.getChunkNo();
-			
-			// Build REMOVED message (fileData.getFileId, chunkNo);
-			// Remove Chunk from DB
-			// Send removed message
-		}	
+	private void removeChunk(String toRemove) {
+		ChunkData chunk = peer.getDB().getChunkInfo(toRemove);
+		String fileId = chunk.getFileId();
+		int chunkNo = chunk.getChunkNo();
+
+		Message removed = buildRemovedMessage(fileId, chunkNo);
+		peer.getDB().removeChunk(toRemove);
+		peer.getDisk().releaseSpace(chunk.getChunkSize());
+		peer.getControlChannel().sendMessage(removed);
 	}
 	
 	@Override
 	public void run() {
 		if (!peer.getDisk().resizeDisk(maxSize)) {
-			// Remove files until disk.currSize <= maxSize
 			long sizeToRemove = peer.getDisk().getCurrSize() - maxSize;
-			ArrayList<String> toRemove = chunksToRemove(sizeToRemove);
-			removeChunks(toRemove);
+			removeChunks(sizeToRemove);
+			peer.getDisk().resizeDisk(maxSize);
 		}
 	}
 }

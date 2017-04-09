@@ -77,8 +77,7 @@ public class BackupInitiator implements Runnable {
 		
 		System.out.println(putchunk.getFileId());
 		
-		
-		peer.getDB().saveChunkInfo(chunkKey, new ChunkData(0, putchunk.getReplicationDeg(), putchunk.getData().length, putchunk.getFileId(), putchunk.getChunkNo()));
+		peer.getDB().saveChunkInfo(chunkKey, new ChunkData(chunkKey, 0, putchunk.getReplicationDeg(), putchunk.getData().length, putchunk.getFileId(), putchunk.getChunkNo()));
 
 		while (attempts <= MAX_TRIES) {
 			peer.getBackupChannel().sendMessage(putchunk);

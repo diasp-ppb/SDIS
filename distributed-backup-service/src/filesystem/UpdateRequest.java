@@ -2,6 +2,7 @@ package filesystem;
 
 import peer.Peer;
 import utils.Message;
+import utils.Utils;
 
 public class UpdateRequest implements Runnable {
 	private Peer peer;
@@ -30,6 +31,25 @@ public class UpdateRequest implements Runnable {
 		peer.getDB().chunkAlreadySent(chunkKey);
 	}
 	
+	private void removedHandler() {
+		String chunkKey = msg.getFileId() + msg.getChunkNo();
+		if (peer.getDB().chunkOnDB(chunkKey)) {
+			peer.getDB().updateReplicationDegree(-1, chunkKey);
+			
+			if (!peer.getDB().desiredReplication(chunkKey)) {
+				try {
+					Thread.sleep(Utils.randomNumber(0, 400));
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
+				// Initiate Chunk backup subprotocol
+				// Listen for putchunk
+				
+			}
+		}
+	}
+	
 	private void handleMessage() {
 		switch (msg.getType()) {
 		case "STORED":
@@ -37,6 +57,9 @@ public class UpdateRequest implements Runnable {
 			break;
 		case "CHUNK":
 			chunkHandler();
+			break;
+		case "REMOVED":
+			removedHandler();
 			break;
 		default:
 			break;
