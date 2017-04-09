@@ -1,11 +1,8 @@
 package protrocols;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.EnumMap;
 import filesystem.Database;
 import filesystem.FileData;
-import filesystem.ChunkData;
 import peer.Peer;
 import utils.Message;
 import utils.Message.Field;

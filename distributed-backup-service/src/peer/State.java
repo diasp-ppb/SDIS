@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import filesystem.Database;
 import filesystem.FileData;
-import filesystem.ChunkData;
 
 public class State {
 	private Peer peer;

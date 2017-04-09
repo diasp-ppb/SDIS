@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import utils.Message;
 
@@ -379,6 +378,8 @@ public class FileSystem {
 		
 		
 		try (BufferedReader br = new BufferedReader(new FileReader(new File(chunks)))) {
+			
+			while ((line = br.readLine()) != null) {
 			 String [] parts = line.split("\\s+");
 			 
 			 String chunkKey = parts[0];
@@ -391,6 +392,7 @@ public class FileSystem {
 			 ChunkData newData = new ChunkData(chunkKey, currentReplication, minReplication, chunkSize, fileId, chunkNo);
 			 
 			 db.saveChunkInfo(chunkKey, newData);
+			}
 			
 		} catch (FileNotFoundException e) {
 			return false;

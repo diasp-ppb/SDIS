@@ -1,8 +1,6 @@
 package protrocols;
 
 import java.io.File;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import filesystem.FileData;
@@ -93,6 +91,10 @@ public class BackupInitiator implements Runnable {
 
 			attempts++;
 		}
+		peer.getFs().saveDatabase(peer.getDB());
+		peer.getFs().loadDatabase(peer.getDB());
 	}
+	
+
 
 }

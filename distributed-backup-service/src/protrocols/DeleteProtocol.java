@@ -1,14 +1,9 @@
 package protrocols;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.net.DatagramPacket;
-import java.util.EnumMap;
-
 import filesystem.Database;
 import peer.Peer;
 import utils.Message;
-import utils.Message.Field;
 
 public class DeleteProtocol implements Runnable {
 	private Peer peer;

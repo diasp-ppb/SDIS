@@ -6,8 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.FileOwnerAttributeView;
-import java.nio.file.attribute.UserPrincipal;
 import java.security.NoSuchAlgorithmException;
 
 import javax.xml.bind.DatatypeConverter;
@@ -24,7 +22,21 @@ public class FileData {
 	private int replicationDegree;
 	
 	private String fileId;
+	
+	
 		
+	public FileData(String name, long fileSize, String owner, long lastModification, int chunkNo, int replicationDegree,
+			String fileId) {
+		super();
+		this.name = name;
+		this.fileSize = fileSize;
+		this.owner = owner;
+		this.lastModification = lastModification;
+		this.chunkNo = chunkNo;
+		this.replicationDegree = replicationDegree;
+		this.fileId = fileId;
+	}
+
 	public FileData(File file, int replicationDegree) {
 		this.name = file.getName();
 		this.fileSize = file.length();
@@ -79,6 +91,14 @@ public class FileData {
 		return replicationDegree;
 	}
 	
+	public String getOwner() {
+		return owner;
+	}
+
+	public long getLastModification() {
+		return lastModification;
+	}
+
 	public String toString() {
 		return name + " with id " + fileId + " and replication degree of " + replicationDegree; 
 	}

@@ -1,11 +1,7 @@
 package peer;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -20,9 +16,7 @@ import filesystem.FileSystem;
 import protrocols.BackupInitiator;
 import protrocols.DeleteInitiator;
 import protrocols.Reclaim;
-
 import protrocols.RestoreInitiator;
-import utils.Message;
 
 public class Peer implements RMIservice {
 	private String protocolVersion;
