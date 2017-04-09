@@ -18,9 +18,10 @@ import utils.Message;
 
 public class FileSystem {
 
-	private final String  chunkDir = "data/chunks/";
-	private final String  filesDir = "data/files/";
-	private final String  backupDir= "data/backup/";
+	public static final String  chunkDir = "data/chunks/";
+	public static final String  filesDir = "data/files/";
+	public static final String  backupDir= "data/backup/";
+	
 	public FileSystem () {
 		//Create the peer dir if they dont exists
 		if(!directoryExist("data")) {

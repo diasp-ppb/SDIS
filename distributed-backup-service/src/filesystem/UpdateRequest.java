@@ -24,6 +24,20 @@ public class UpdateRequest implements Runnable {
 		} 
 	}
 	
+	private void storedHandlerV2() {
+		Database db = peer.getDB();
+		
+		String chunkKey = msg.getFileId() + msg.getChunkNo();
+				
+		if (db.chunkOnDB(chunkKey)) {
+			db.updateReplicationDegree(1, chunkKey);
+		}
+		else {
+			db.saveChunkInfo(chunkKey, new ChunkData(chunkKey, 1, -1, -1, msg.getFileId(), msg.getChunkNo()));
+		}
+		
+	}
+	
 	private void chunkHandler() {
 		String chunkKey = msg.getFileId() + msg.getChunkNo();
 		peer.getDB().chunkAlreadySent(chunkKey);

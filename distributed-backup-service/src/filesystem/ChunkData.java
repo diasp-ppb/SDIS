@@ -44,5 +44,13 @@ public class ChunkData {
 	public int getChunkNo() {
 		return chunkNo;
 	}
+
+	public void setMinReplication(int minReplication) {
+		this.minReplication = minReplication;
+	}
+
+	public void setChunkSize(int chunkSize) {
+		this.chunkSize = chunkSize;
+	}
 	
 }

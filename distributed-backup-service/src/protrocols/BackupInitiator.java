@@ -78,12 +78,12 @@ public class BackupInitiator implements Runnable {
 		System.out.println(putchunk.getFileId());
 		
 		peer.getDB().saveChunkInfo(chunkKey, new ChunkData(chunkKey, 0, putchunk.getReplicationDeg(), putchunk.getData().length, putchunk.getFileId(), putchunk.getChunkNo()));
-
+			
 		while (attempts <= MAX_TRIES) {
 			peer.getBackupChannel().sendMessage(putchunk);
 			
 			try {
-				Thread.sleep(Utils.randomNumber(350, 500));
+				Thread.sleep(1000*attempts);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -93,8 +93,8 @@ public class BackupInitiator implements Runnable {
 
 			attempts++;
 		}
-		peer.getFs().saveDatabase(peer.getDB());
-		peer.getFs().loadDatabase(peer.getDB());
+		peer.getFs().saveDatabase(peer.getDB()); //TODO
+		
 	}
 
 }
