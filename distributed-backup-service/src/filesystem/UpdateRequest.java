@@ -17,9 +17,7 @@ public class UpdateRequest implements Runnable {
 		Database db = peer.getDB();
 		
 		String chunkKey = msg.getFileId() + msg.getChunkNo();
-		
-		System.out.println("STORED UPDATE");
-		
+				
 		if (db.chunkOnDB(chunkKey)) {
 			
 			db.updateReplicationDegree(1, chunkKey);

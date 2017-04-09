@@ -44,7 +44,7 @@ public class DeleteInitiator implements Runnable {
 		this.peer.getControlChannel().sendMessage(delete);
 				
 		
-		DB.removeFile(null, filePath);
+		DB.removeFile(filePath);
 		
 		System.out.println("Ended");
 		

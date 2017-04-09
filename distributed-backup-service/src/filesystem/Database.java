@@ -9,7 +9,6 @@ public class Database {
 	private HashMap<String, ChunkData> storedChunks;
 	private HashMap<String, FileData> sentFiles;
 	private HashMap<String, Boolean> chunkSent;
-	private HashMap<String, Integer>  fileSystemId;
 
 	private static int UNIQUE_ID = 0;
 
@@ -17,7 +16,6 @@ public class Database {
 		storedChunks = new HashMap<String, ChunkData>();
 		sentFiles = new HashMap<String, FileData>();
 		chunkSent = new HashMap<String, Boolean>();
-		fileSystemId = new HashMap<String, Integer>();
 	}
 	
 	// Methods related to chunks stored by peer
@@ -97,23 +95,9 @@ public class Database {
 		storedChunks.remove(chunkId);
 	}
 	
-	public void addFileStored(String fileId){
-		fileSystemId.put(fileId,++UNIQUE_ID);
-	}
 	
-	public boolean FileStored(String fileId) {
-		
-		return fileSystemId.containsKey(fileId);
-	}
 	
-	public int getFileStorageId(String  fileId) {
-		
-		return fileSystemId.get(fileId);
-	}
-	
-	public void removeFile(String fileId, String path) {
-		if(fileId != null)
-		fileSystemId.remove(fileId);
+	public void removeFile(String path) {
 		if(path != null)
 			sentFiles.remove(path);
 	}

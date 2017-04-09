@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -36,7 +37,7 @@ public class FileSystem {
 			File file = new File(filesDir);
 			file.mkdir();
 		}
-		
+
 		if(!directoryExist(backupDir)) {
 			File file = new File(backupDir);
 			file.mkdir();
@@ -108,13 +109,11 @@ public class FileSystem {
 		}
 	}
 
-	public byte[] loadChunk(int fileID, int chunkNo) throws FileNotFoundException {
+	public byte[] loadChunk(String fileID, int chunkNo) throws FileNotFoundException {
 
 		String path = chunkDir +fileID+ "/"+chunkNo;
 
 		File load = new File(path);
-
-		//System.out.println(path);
 
 		if(directoryExist(path)) {
 			System.out.println("existe");
@@ -133,8 +132,8 @@ public class FileSystem {
 		return data;
 	}
 
-	public void saveChunk(int fileStoreId, int chunkNo,byte[] data) {
-		String fileChunks = chunkDir + fileStoreId + "/";
+	public void saveChunk(String storageId, int chunkNo,byte[] data) {
+		String fileChunks = chunkDir + storageId + "/";
 		String path = fileChunks + chunkNo;
 		if(! directoryExist(fileChunks)){
 			File theDir = new File(fileChunks);
@@ -233,23 +232,23 @@ public class FileSystem {
 		}
 		return false;
 	}
-	
-	
+
+
 	public void addFileToDBbackup(String key, FileData value, boolean append) {
-		
+
 		String files = "files";
-		
+
 		String save = key + " " + value.getName();
 		save += " " + value.getFileSize() +  " ";
-		
+
 		if(value.getOwner() == null) {
 			save += "NULL";
 		}else{
 			save += value.getOwner();
 		}
 		save += " " + value.getLastModification() + " " + value.getReplicationDegree();
-		save += " " + value.getFileId() + "\n";
-		
+		save += " "+ value.getChunkNo() +" " + value.getFileId() + "\n";
+
 		if(!fileExist(backupDir + files)) {	
 			try {
 				File newfile = new File(backupDir + files);
@@ -271,17 +270,17 @@ public class FileSystem {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
-		
+
 	}
-	
-	
+
+
 	public void addChunkToDBbackup(String key, ChunkData value , boolean append) {
 		String chunks = "chunks";
-		
+
 		String save = key + " " + value.getCurrentReplication();
 		save += " " + value.getMinReplication() + " " + value.getChunkSize();
 		save += " " + value.getFileId() + " " + value.getChunkNo() + "\n";
-		
+
 		if(!fileExist(backupDir + chunks)) {	
 			try {
 				File newfile = new File(backupDir + chunks);
@@ -303,104 +302,113 @@ public class FileSystem {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
-		
-	
+
+
 	}
 
 	public void saveDatabase(Database db){
-		Map<String, FileData> save =  db.getSentFiles();
 		
+		
+		Map<String, FileData> save =db.getSentFiles();
+	
+
 		Iterator<Entry<String, FileData>> it = save.entrySet().iterator();
-		
+
+		if(!it.hasNext())
+			return;
 		Map.Entry<String, FileData> entry = it.next();
 
 		addFileToDBbackup(entry.getKey(),entry.getValue(),false);
-		
+
 		while(it.hasNext()){
 			entry = it.next();
 			addFileToDBbackup(entry.getKey(),entry.getValue(),true);
 		}
-		
-		
+
+
 		Map<String, ChunkData> chunks =  db.getStoredChunks();
-		
+
 		Iterator<Entry<String, ChunkData>> itChunk = chunks.entrySet().iterator();
-		
+
 		Map.Entry<String, ChunkData> entryChunk = itChunk.next();
-		
+
 		addChunkToDBbackup(entryChunk.getKey(),entryChunk.getValue(),false);
-		
+
 		while(itChunk.hasNext()){
 			entryChunk = itChunk.next();
 			addChunkToDBbackup(entryChunk.getKey(),entryChunk.getValue(),true);
 		}
-		
-		
+
+
 	}
-	
-	
-	
+
+
+
 	public boolean loadDatabase(Database db) {
-		
+
 		String files = backupDir + "files";
 		String chunks = backupDir + "chunks";
-		
-		
+
+
 		if(!fileExist(chunks)) {
 			return false;
 		}
-		
+
 		if(!fileExist(files)) {	
 			return false;
 		}
-		
+
 		String line;
-		
+
+
+
 		try (BufferedReader br = new BufferedReader(new FileReader(new File(files)))) {
-		    
-		    while ((line = br.readLine()) != null) {
-		    	String [] parts = line.split("\\s+");
-		    	String path = parts[0];
-		    	String name = parts[1];
-		    	long filesize = Long.parseLong(parts[2]);
-		    	String owner = parts[3];
-		    	long lastModification = Long.parseLong(parts[4]);
-		    	int chunkNo = Integer.parseInt(parts[5]);
-		    	int replicationDegree = Integer.parseInt(parts[6]);
-		    	String fileId = parts[7];
-		    	db.saveStoredFile(path,new FileData(name,filesize,owner, lastModification, chunkNo,replicationDegree, fileId));
-		    }
-		} catch (FileNotFoundException e) {
-			return false;
-		} catch (IOException e) {
-			return false;
-		}
-		
-		
-		try (BufferedReader br = new BufferedReader(new FileReader(new File(chunks)))) {
-			
+
 			while ((line = br.readLine()) != null) {
-			 String [] parts = line.split("\\s+");
-			 
-			 String chunkKey = parts[0];
-			 int currentReplication = Integer.parseInt(parts[1]);
-		     int minReplication = Integer.parseInt(parts[2]);
-			 int chunkSize = Integer.parseInt(parts[3]);
-			 String fileId = parts[4];
-			 int chunkNo = Integer.parseInt(parts[5]);
-			 
-			 ChunkData newData = new ChunkData(chunkKey, currentReplication, minReplication, chunkSize, fileId, chunkNo);
-			 
-			 db.saveChunkInfo(chunkKey, newData);
+				String [] parts = line.split("\\s+");
+				System.out.println(parts.length);
+				System.out.println(parts[6]);
+				String path = parts[0];
+				String name = parts[1];
+				long filesize = Long.parseLong(parts[2]);
+				String owner = parts[3];
+				long lastModification = Long.parseLong(parts[4]);
+				int chunkNo = Integer.parseInt(parts[5]);
+				int replicationDegree = Integer.parseInt(parts[6]);
+				String fileId = parts[7];
+				db.saveStoredFile(path,new FileData(name,filesize,owner, lastModification, chunkNo,replicationDegree, fileId));
 			}
-			
 		} catch (FileNotFoundException e) {
 			return false;
 		} catch (IOException e) {
 			return false;
 		}
-		
-		
+
+
+		try (BufferedReader br = new BufferedReader(new FileReader(new File(chunks)))) {
+
+			while ((line = br.readLine()) != null) {
+				String [] parts = line.split("\\s+");
+
+				String chunkKey = parts[0];
+				int currentReplication = Integer.parseInt(parts[1]);
+				int minReplication = Integer.parseInt(parts[2]);
+				int chunkSize = Integer.parseInt(parts[3]);
+				String fileId = parts[4];
+				int chunkNo = Integer.parseInt(parts[5]);
+
+				ChunkData newData = new ChunkData(chunkKey, currentReplication, minReplication, chunkSize, fileId, chunkNo);
+
+				db.saveChunkInfo(chunkKey, newData);
+			}
+
+		} catch (FileNotFoundException e) {
+			return false;
+		} catch (IOException e) {
+			return false;
+		}
+
+
 		return true;
 	}
 }

@@ -19,7 +19,8 @@ public class DeleteProtocol implements Runnable {
 		System.out.println("delete protocol");
 		Database DB = peer.getDB();
 		
-		int storageId = DB.getFileStorageId(msg.getFileId());
+		String storageId = msg.getFileId();
+		
 		String chunksDir = peer.getFs().getChunkDir() + storageId;
 		
 		if(!peer.getFs().directoryExist(chunksDir)) {
@@ -35,7 +36,6 @@ public class DeleteProtocol implements Runnable {
 	        file.delete();
 		}
 		
-		DB.removeFile(msg.getFileId(), null);
 		
 		folder.delete();
 		

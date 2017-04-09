@@ -21,11 +21,8 @@ public class RestoreProtocol implements Runnable {
 		byte[] chunk;
 		
 		System.out.println(fileId);
-		if(peer.getDB().FileStored(fileId)){
-			System.out.println("ta");
-		}
 		
-		int storageId = peer.getDB().getFileStorageId(fileId);
+		String storageId = fileId;
 			
 		try {
 			chunk = peer.getFs().loadChunk(storageId, chunkNo);

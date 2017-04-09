@@ -8,6 +8,7 @@ import filesystem.ChunkData;
 import peer.Peer;
 import utils.Message;
 import utils.Message.Field;
+import utils.Utils;
 
 public class BackupInitiator implements Runnable {
 	private Peer peer;
@@ -65,6 +66,7 @@ public class BackupInitiator implements Runnable {
 		else {
 			System.out.println("Backup Initiator: file doesn't exist");
 		}
+		
 
 	}
 
@@ -81,7 +83,7 @@ public class BackupInitiator implements Runnable {
 			peer.getBackupChannel().sendMessage(putchunk);
 			
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(Utils.randomNumber(350, 500));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -94,7 +96,5 @@ public class BackupInitiator implements Runnable {
 		peer.getFs().saveDatabase(peer.getDB());
 		peer.getFs().loadDatabase(peer.getDB());
 	}
-	
-
 
 }
