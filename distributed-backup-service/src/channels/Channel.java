@@ -55,4 +55,9 @@ public class Channel implements Runnable {
 		
 	}
 	
+	public String getMessageSender(DatagramPacket packet) {
+		Message msg = new Message(packet);
+		return msg.getSenderId();
+	}
+	
 }
