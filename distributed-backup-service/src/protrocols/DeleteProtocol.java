@@ -15,9 +15,9 @@ public class DeleteProtocol implements Runnable {
 	}
 	
 	private void handlePacket() {
-		
 		System.out.println("delete protocol");
-		Database DB = peer.getDB();
+		
+		peer.getDB().addDeleteMessage(msg);
 		
 		String storageId = msg.getFileId();
 		
@@ -31,7 +31,7 @@ public class DeleteProtocol implements Runnable {
 		
 		System.out.println(folder.listFiles().length);
 		for(File file: folder.listFiles()) {
-			DB.removeChunk(msg.getFileId()+file.getName());
+			peer.getDB().removeChunk(msg.getFileId()+file.getName());
 			peer.getDisk().releaseSpace(file.length());
 	        file.delete();
 		}

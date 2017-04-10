@@ -8,6 +8,7 @@ import java.util.HashMap;
 import filesystem.UpdateRequest;
 import peer.Peer;
 import protrocols.BackupInitiator;
+import protrocols.DeleteEnhacement;
 import protrocols.DeleteProtocol;
 import protrocols.RestoreProtocol;
 import utils.Message;
@@ -56,6 +57,11 @@ public class ControlChannel extends Channel{
 					break;
 				case "REMOVED":
 					new Thread(new UpdateRequest(peer, received)).start();
+					break;
+				case "CHECKDELETED":
+					if (peer.getProtocolVersion().equals("2.0")) {
+						new Thread(new DeleteEnhacement(peer)).start();
+					}
 					break;
 				default:
 					break;

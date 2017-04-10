@@ -37,6 +37,8 @@ public class DeleteInitiator implements Runnable {
 			return;
 		}
 		
+		System.out.println("HEY");
+		
 		String fileId = new String (fileInfo.getFileId());
 		Message delete = buildDeleteMessage(fileId);
 		

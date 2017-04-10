@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.EnumMap;
 
 import channels.BackupChannel;
 import channels.ControlChannel;
@@ -17,6 +18,8 @@ import protrocols.BackupInitiator;
 import protrocols.DeleteInitiator;
 import protrocols.Reclaim;
 import protrocols.RestoreInitiator;
+import utils.Message;
+import utils.Message.Field;
 
 public class Peer implements RMIservice {
 	private String protocolVersion;
@@ -43,6 +46,11 @@ public class Peer implements RMIservice {
 			Peer peer = new Peer(args);
 			peer.initChannels();
 			peer.startRMIservice();
+			
+			if (peer.protocolVersion.equals("2.0")) {
+				peer.checkDeleted();
+			}
+			
 		} catch (InvalidArgumentsException e) {
 			System.out.println("USAGE: <mcAddress> <mcPort> <mdbAddress> <mdbPort> <mdrAddress> <mdrPort>");
 		}
@@ -56,6 +64,19 @@ public class Peer implements RMIservice {
 		db = new Database();
 		disk = new Disk();
 		fs.loadDatabase(db,disk);
+	}
+	
+	private void checkDeleted() {
+		EnumMap<Field, String> messageHeader = new EnumMap<Field, String>(Field.class);
+
+		messageHeader.put(Field.MESSAGE_TYPE, "CHECKDELETED");
+		messageHeader.put(Field.VERSION, protocolVersion);
+		messageHeader.put(Field.SENDER_ID, peerId);
+		
+		Message msg = new Message(messageHeader);
+		
+		mcChannel.sendMessage(msg);
+		
 	}
 
 	public String getProtocolVersion() {

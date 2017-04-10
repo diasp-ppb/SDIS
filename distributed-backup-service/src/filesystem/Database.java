@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+
+import utils.Message;
 
 public class Database {
 
@@ -14,6 +17,8 @@ public class Database {
 	
 	private HashMap<String, Boolean> chunkSent;
 	private HashMap<String, Boolean> putChunkSent;
+	
+	private LinkedList<Message> deleteMessages;
 
 
 	public Database() {
@@ -24,6 +29,8 @@ public class Database {
 		
 		chunkSent = new HashMap<String, Boolean>();
 		putChunkSent = new HashMap<String, Boolean>();
+		
+		deleteMessages = new LinkedList<Message>();
 	}
 	
 	// Methods related to chunks stored by peer
@@ -172,6 +179,19 @@ public class Database {
 		}
 		
 		return false;
+	}
+	
+	public synchronized void addDeleteMessage(Message msg) {
+		// store only the last 10 messages
+		if (deleteMessages.size() >= 30) {
+			deleteMessages.removeFirst();
+		}
+		
+		deleteMessages.add(msg);
+	}
+	
+	public LinkedList<Message> getDeleteMessages() {
+		return deleteMessages;
 	}
 	
 	// List Chunk Information
