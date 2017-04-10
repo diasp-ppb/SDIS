@@ -50,9 +50,12 @@ public class RestoreInitiator implements Runnable {
 
 	@Override
 	public void run() {
-		fileInfo = peer.getDB().getFileData(filePath);
 		
-		fileId = new String( fileInfo.getFileId());
+		fileInfo = peer.getDB().getFileData(filePath);
+		if(fileInfo == null) {
+			System.out.println("the file isn't  on backup");
+		}
+		fileId =  fileInfo.getFileId();
 		
 		
 		if (fileInfo == null) {

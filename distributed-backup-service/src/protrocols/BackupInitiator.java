@@ -50,12 +50,13 @@ public class BackupInitiator implements Runnable {
 				File load = new File(filePath);
 				FileData info = new FileData(load, replicationDegree);
 				String fileid = info.getFileId();
-				
+				peer.getDB().saveStoredFile(filePath, info);
 				ArrayList<byte[]> splitted = peer.getFs().splitFile(load);
 				
 				info.setChunkNo(splitted.size());
 				
 				System.out.println("Splited size " + splitted.size());
+			
 				
 				for(int i = 0; i < splitted.size(); i++) {
 					byte[] chunkData = splitted.get(i);
