@@ -46,6 +46,8 @@ public class DeleteInitiator implements Runnable {
 		
 		DB.removeFile(filePath);
 		
+		peer.saveDB(); //DB
+		
 		System.out.println("Ended");
 		
 		

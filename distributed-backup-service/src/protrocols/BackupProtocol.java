@@ -119,6 +119,7 @@ public class BackupProtocol implements Runnable {
 				System.out.println("Stored");
 
 			}
+			peer.saveDB(); //DB
 		}
 
 	}
@@ -140,6 +141,7 @@ public class BackupProtocol implements Runnable {
 				}
 				peer.getControlChannel().sendMessage(response);
 			}
+			peer.saveDB();//DB
 		}
 	}
 

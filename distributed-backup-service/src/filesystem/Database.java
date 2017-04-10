@@ -15,7 +15,6 @@ public class Database {
 	private HashMap<String, Boolean> chunkSent;
 	private HashMap<String, Boolean> putChunkSent;
 
-	private static int UNIQUE_ID = 0;
 
 	public Database() {
 		storedChunks = new HashMap<String, ChunkData>();

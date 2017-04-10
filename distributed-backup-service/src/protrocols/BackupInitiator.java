@@ -68,8 +68,6 @@ public class BackupInitiator implements Runnable {
 					replication = 0;
 					peer.getControlChannel().removeBackupInitiator(chunkKey);
 					
-					peer.getFs().saveDatabase(peer.getDB()); // TODO
-					
 					System.out.println(putchunk.toString());
 				}
 				
@@ -96,6 +94,7 @@ public class BackupInitiator implements Runnable {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		peer.saveDB(); // DB
 	}
 
 	@Override
@@ -141,7 +140,7 @@ public class BackupInitiator implements Runnable {
 			
 			attempts++;
 		}
-		peer.getFs().saveDatabase(peer.getDB()); //TODO
+		
 		
 	}
 	

@@ -84,6 +84,8 @@ public class Reclaim implements Runnable {
 			long sizeToRemove = peer.getDisk().getCurrSize() - maxSize;
 			removeChunks(sizeToRemove);
 			peer.getDisk().resizeDisk(maxSize);
+			
+			peer.saveDB(); // DB
 		}
 	}
 }

@@ -39,6 +39,8 @@ public class DeleteProtocol implements Runnable {
 		
 		folder.delete();
 		
+		peer.saveDB(); //DB
+		
 		System.out.println("DELETED");
 	}
 

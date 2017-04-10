@@ -7,9 +7,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,7 +21,7 @@ public class FileSystem {
 	public static final String  chunkDir = "data/chunks/";
 	public static final String  filesDir = "data/files/";
 	public static final String  backupDir= "data/backup/";
-	
+
 	public FileSystem () {
 		//Create the peer dir if they dont exists
 		if(!directoryExist("data")) {
@@ -235,9 +235,7 @@ public class FileSystem {
 	}
 
 
-	public void addFileToDBbackup(String key, FileData value, boolean append) {
-
-		String files = "files";
+	private void addFileToDBbackup(String key, FileData value, boolean append, String files) {
 
 		String save = key + " " + value.getName();
 		save += " " + value.getFileSize() +  " ";
@@ -250,15 +248,7 @@ public class FileSystem {
 		save += " " + value.getLastModification() + " " + value.getReplicationDegree();
 		save += " "+ value.getChunkNo() +" " + value.getFileId() + "\n";
 
-		if(!fileExist(backupDir + files)) {	
-			try {
-				File newfile = new File(backupDir + files);
-				newfile.createNewFile();
-			} catch (IOException e) {
-				System.out.println("Unable to create file "+ files );
-				return;
-			}
-		}
+
 
 		try {
 			FileOutputStream out = new FileOutputStream(backupDir + files, append);
@@ -275,9 +265,7 @@ public class FileSystem {
 	}
 
 
-	public void addChunkToDBbackup(String key, ChunkData value , boolean append) {
-		String chunks = "chunks";
-
+	private void addChunkToDBbackup(String key, ChunkData value , boolean append,String chunks) {
 		String save = key + " " + value.getCurrentReplication();
 		save += " " + value.getMinReplication() + " " + value.getChunkSize();
 		save += " " + value.getFileId() + " " + value.getChunkNo() + "\n";
@@ -307,44 +295,88 @@ public class FileSystem {
 
 	}
 
-	public void saveDatabase(Database db){
+	public synchronized void  saveDatabase(Database db){
+		String chunks = "chunks.txt";
+		String files = "files.txt";
+
+		System.out.println("saving DB");
 		
+		File backupFile = new File(backupDir + chunks);
+		File backupChunks = new File(backupDir + files);
+		if(!fileExist(backupDir + chunks)) {	
+			try {
+				
+				backupFile.createNewFile();
+				
+			} catch (IOException e) {
+				System.out.println("Unable to create file "+ chunks );
+				return;
+			}
+		}
+
+		if(!fileExist(backupDir + files)) {	
+			try {
+				 backupChunks.createNewFile();
+			} catch (IOException e) {
+				System.out.println("Unable to create file "+ files );
+				return;
+			}
+		}
+		
+		clearFile(backupFile);
+		clearFile(backupChunks);
 		
 		Map<String, FileData> save =db.getSentFiles();
-	
+
+		System.out.println("SAVEDB " + save.size());
 
 		Iterator<Entry<String, FileData>> it = save.entrySet().iterator();
 
-		if(!it.hasNext())
-			return;
-		Map.Entry<String, FileData> entry = it.next();
+		if(it.hasNext()) {
 
-		addFileToDBbackup(entry.getKey(),entry.getValue(),false);
+			Map.Entry<String, FileData> entry = it.next();
 
-		while(it.hasNext()){
-			entry = it.next();
-			addFileToDBbackup(entry.getKey(),entry.getValue(),true);
+			addFileToDBbackup(entry.getKey(),entry.getValue(),false,files);
+
+			while(it.hasNext()){
+				entry = it.next();
+				addFileToDBbackup(entry.getKey(),entry.getValue(),true,files);
+			}
+
 		}
-
-
-		Map<String, ChunkData> chunks =  db.getStoredChunks();
-
-		Iterator<Entry<String, ChunkData>> itChunk = chunks.entrySet().iterator();
 		
-		if(!it.hasNext())
-			return;
-		Map.Entry<String, ChunkData> entryChunk = itChunk.next();
 
-		addChunkToDBbackup(entryChunk.getKey(),entryChunk.getValue(),false);
+		Map<String, ChunkData> chunksMap =  db.getStoredChunks();
 
-		while(itChunk.hasNext()){
-			entryChunk = itChunk.next();
-			addChunkToDBbackup(entryChunk.getKey(),entryChunk.getValue(),true);
+		System.out.println("SAVEDB chunks" + chunksMap.size());
+		System.out.println("SAVEDB chunks" + chunksMap.entrySet().iterator().hasNext());
+
+		Iterator<Entry<String, ChunkData>> itChunk = chunksMap.entrySet().iterator();
+
+		if(itChunk.hasNext()){
+			Map.Entry<String, ChunkData> entryChunk = itChunk.next();
+
+			addChunkToDBbackup(entryChunk.getKey(),entryChunk.getValue(),false,chunks);
+
+			while(itChunk.hasNext()){
+				entryChunk = itChunk.next();
+				addChunkToDBbackup(entryChunk.getKey(),entryChunk.getValue(),true,chunks);
+			}
 		}
 
 
 	}
-
+	
+	private void clearFile(File file) {
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter(file);
+			writer.print("");
+			writer.close();
+		} catch (Exception e) {
+		}
+		
+	}
 
 
 	public boolean loadDatabase(Database db) {

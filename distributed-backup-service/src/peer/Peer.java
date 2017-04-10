@@ -135,6 +135,10 @@ public class Peer implements RMIservice {
 		return mdrAddress;
 	}
 	
+	public void saveDB() {
+		fs.saveDatabase(db);
+	}
+	
 	@Override
 	public void backup(String path, int replicationDegree) throws RemoteException {
 		System.out.println("Called backup with path: "  + path + " and repDegree: " + replicationDegree + ".");
@@ -165,4 +169,6 @@ public class Peer implements RMIservice {
 	public String state() throws RemoteException {
 		return new State(this).toString();
 	}
+	
+	
 }
