@@ -23,7 +23,7 @@ public class BackupProtocol implements Runnable {
 	private void saveChunk(Message msg) {
 
 		String storageId  = msg.getFileId();
-		
+
 		peer.getFs().saveChunk(storageId,msg.getChunkNo(),msg.getData());
 	}
 
@@ -40,7 +40,7 @@ public class BackupProtocol implements Runnable {
 	}
 
 	private boolean updateDB(Message msg) {
-		
+
 		String chunkKey = msg.getFileId()+msg.getChunkNo();
 
 		Database db = peer.getDB();
@@ -65,33 +65,28 @@ public class BackupProtocol implements Runnable {
 		String chunkKey = msg.getFileId()+msg.getChunkNo();
 
 		Database db = peer.getDB();
-		
-		
-		
+
 		if(!peer.getDisk().reserveSpace(msg.getData().length)) {
 			System.out.println("Not enough space in disk");
 			return false;
 		}
 
 		if(db.chunkOnDB(chunkKey)) {
+			
 			ChunkData data = db.getChunkInfo(chunkKey);
-
-			
-			
 			System.out.println(data.getCurrentReplication() );
 			if(data.getCurrentReplication() >= msg.getReplicationDeg()) {
 				peer.getDisk().releaseSpace(msg.getData().length);
 				db.removeChunk(chunkKey);
-			
 				return false;
 			}
-			
-			
+
+
 			data.setChunkSize(msg.getData().length);
-			data.setMinReplication(msg.getReplicationDeg());
 			data.setCurrentReplication(data.getCurrentReplication() + 1);
+			data.setMinReplication(msg.getReplicationDeg());
 			db.saveChunkInfo(chunkKey, data);
-			
+
 
 		}
 		else {
@@ -100,13 +95,13 @@ public class BackupProtocol implements Runnable {
 		return true;
 	}
 	private void handlePacketV2() {
-		
+
 		Message msg = new Message(packet);
-		
-		
+
 		if (msg.getType().equals("PUTCHUNK")) {
+				
 			try {
-				Thread.sleep(Utils.randomNumber(0, 400));
+				Thread.sleep(Utils.randomNumber(400, 800));
 			} catch (InterruptedException e) {
 				System.out.println("fail backup 1º sleep");
 			}
@@ -115,11 +110,20 @@ public class BackupProtocol implements Runnable {
 				saveChunk(msg);
 				Message response = buildStoredMessage(msg);
 				System.out.println("OUT " + response.toString());
+				
+				try {
+					Thread.sleep(Utils.randomNumber(0, 400));
+				} catch (InterruptedException e) {
+					System.out.println("fail backup 1º sleep");
+				}
+				
 				peer.getControlChannel().sendMessage(response);
 
 				System.out.println("Stored");
+
 			}
 		}
+
 	}
 
 	private void handlePacket() {
