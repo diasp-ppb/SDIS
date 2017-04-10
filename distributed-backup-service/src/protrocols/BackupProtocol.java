@@ -17,11 +17,9 @@ public class BackupProtocol implements Runnable {
 	public BackupProtocol(Peer peer, DatagramPacket packet) {
 		this.packet = packet;
 		this.peer = peer;
-
 	}
 
 	private void saveChunk(Message msg) {
-
 		String storageId  = msg.getFileId();
 
 		peer.getFs().saveChunk(storageId,msg.getChunkNo(),msg.getData());
@@ -94,9 +92,8 @@ public class BackupProtocol implements Runnable {
 		}
 		return true;
 	}
-	private void handlePacketV2() {
-
-		Message msg = new Message(packet);
+	
+	private void handlePacketV2(Message msg) {
 
 		if (msg.getType().equals("PUTCHUNK")) {
 				
@@ -126,10 +123,10 @@ public class BackupProtocol implements Runnable {
 
 	}
 
-	private void handlePacket() {
-		Message msg = new Message(packet);
+	private void handlePacket(Message msg) {
 		System.out.println("Received PUTCHUNK with size " + msg.getMsg().length + " and body size:" + msg.getData().length);
 		System.out.println("ChunkNo:" + msg.getChunkNo());
+		
 		if (msg.getType().equals("PUTCHUNK")) {
 			if (updateDB(msg)) {
 
@@ -143,18 +140,25 @@ public class BackupProtocol implements Runnable {
 				}
 				peer.getControlChannel().sendMessage(response);
 			}
-		}	
+		}
 	}
 
 
 
 	@Override
 	public void run() {
-		if(peer.getProtocolVersion().equals("1.0")) {
-			handlePacket();
+		Message msg = new Message(packet);
+		
+		// Don't store if chunk corresponds to a file sent by this peer
+		if (peer.getDB().sentFileId(msg.getFileId())) {
+			return;
 		}
-		else if(peer.getProtocolVersion().equals("2.0")) {
-			handlePacketV2();
+		
+		if (peer.getProtocolVersion().equals("1.0")) {
+			handlePacket(msg);
+		}
+		else if (peer.getProtocolVersion().equals("2.0")) {
+			handlePacketV2(msg);
 		}
 	}
 }
