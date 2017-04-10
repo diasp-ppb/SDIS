@@ -66,15 +66,8 @@ public class BackupProtocol implements Runnable {
 
 		Database db = peer.getDB();
 		
-		if(peer.getId().equals(msg.getSenderId()))
-				return false;
-
-		//check if chunk is stored
-		String path = FileSystem.chunkDir + msg.getFileId() + "/" + msg.getChunkNo();
-		if(peer.getFs().fileExist(path)) {
-			return false;
-		}
-
+		
+		
 		if(!peer.getDisk().reserveSpace(msg.getData().length)) {
 			System.out.println("Not enough space in disk");
 			return false;
@@ -83,19 +76,19 @@ public class BackupProtocol implements Runnable {
 		if(db.chunkOnDB(chunkKey)) {
 			ChunkData data = db.getChunkInfo(chunkKey);
 
-			if(data.getMinReplication() == -1){
-				data.setMinReplication(msg.getReplicationDeg());
-			}
-			if(data.getChunkSize() == -1) {
-				data.setChunkSize(msg.getData().length);
-			}
+			
 			
 			System.out.println(data.getCurrentReplication() );
-			if(data.getCurrentReplication() >= data.getMinReplication()) {
+			if(data.getCurrentReplication() >= msg.getReplicationDeg()) {
 				peer.getDisk().releaseSpace(msg.getData().length);
+				db.removeChunk(chunkKey);
+			
 				return false;
 			}
 			
+			
+			data.setChunkSize(msg.getData().length);
+			data.setMinReplication(msg.getReplicationDeg());
 			data.setCurrentReplication(data.getCurrentReplication() + 1);
 			db.saveChunkInfo(chunkKey, data);
 			
