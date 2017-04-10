@@ -3,16 +3,23 @@ package channels;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.util.HashMap;
+
 import filesystem.UpdateRequest;
 import peer.Peer;
+import protrocols.BackupInitiator;
 import protrocols.DeleteProtocol;
 import protrocols.RestoreProtocol;
 import utils.Message;
 
 public class ControlChannel extends Channel{
-
+	
+	private HashMap<String, BackupInitiator> backupInitiators;
+	
+	
 	public ControlChannel(Peer peer, InetAddress address, int port) {
 		super(peer, address, port);
+		backupInitiators = new HashMap<String, BackupInitiator>();
 	}
 
 	@Override
@@ -34,10 +41,19 @@ public class ControlChannel extends Channel{
 			if(!received.getSenderId().equals(peer.getId())) {
 				switch (received.getType()) {
 				case "STORED":
+					System.out.println(received.toString());
+					String key =  received.getFileId()+received.getChunkNo();
+					if(backupInitiators.containsKey(key)){
+						backupInitiators.get(key).increaseReplicationDegree();
+						System.out.println("UPDAte");
+					}
+					
+					System.out.println(backupInitiators);
+					System.out.println(key);
 					new Thread(new UpdateRequest(peer, received)).start();
 					break;
 				case "GETCHUNK":
-					new Thread(new RestoreProtocol(peer, packet)).start();
+					new Thread(new RestoreProtocol(peer, received)).start();
 					break;
 				case "DELETE":
 					new Thread(new DeleteProtocol(peer,received)).start();
@@ -51,4 +67,12 @@ public class ControlChannel extends Channel{
 			}
 		}
 	}
+	
+	public void addBackupInitiator(String chunkKey, BackupInitiator backup) {
+		backupInitiators.put(chunkKey, backup);
+    }
+    
+    public void removeBackupInitiator(String chunkKey){
+    	backupInitiators.remove(chunkKey);
+    }
 }

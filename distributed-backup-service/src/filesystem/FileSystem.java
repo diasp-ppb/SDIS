@@ -330,7 +330,9 @@ public class FileSystem {
 		Map<String, ChunkData> chunks =  db.getStoredChunks();
 
 		Iterator<Entry<String, ChunkData>> itChunk = chunks.entrySet().iterator();
-
+		
+		if(!it.hasNext())
+			return;
 		Map.Entry<String, ChunkData> entryChunk = itChunk.next();
 
 		addChunkToDBbackup(entryChunk.getKey(),entryChunk.getValue(),false);

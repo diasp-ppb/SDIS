@@ -62,9 +62,10 @@ public class BackupInitiator implements Runnable {
 					Message putchunk = buildPutChunkMessage(fileid, replicationDegree, i, chunkData);
 					String chunkKey = fileid + i;
 					
-					peer.getBackupChannel().addBackupInitiator(chunkKey, this);
+					peer.getControlChannel().addBackupInitiator(chunkKey, this);
 					sendPackage(putchunk);
-					peer.getBackupChannel().removeBackupInitiator(chunkKey);
+					replication = 0;
+					peer.getControlChannel().removeBackupInitiator(chunkKey);
 					
 					peer.getFs().saveDatabase(peer.getDB()); // TODO
 					
@@ -126,13 +127,13 @@ public class BackupInitiator implements Runnable {
 		while (attempts <= MAX_TRIES) {
 			peer.getBackupChannel().sendMessage(putchunk);	
 			try {
-				Thread.sleep(1000*attempts);
+				Thread.sleep(1000*(attempts+1));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 			
-			if (replication <= replicationDegree) {
-				replication = 0;
+			System.out.println("rep " + replication);
+			if (replication >= replicationDegree) {
 				return;
 			}
 			
@@ -142,8 +143,9 @@ public class BackupInitiator implements Runnable {
 		
 	}
 	
-	public  void increaseReplicationDegree() {
-		replication++;
+	public void increaseReplicationDegree() {
+		replication += 1;
+		System.out.println("INCREASED " + replication);
 	}
 }
 

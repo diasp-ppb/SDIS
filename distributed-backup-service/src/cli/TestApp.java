@@ -2,14 +2,9 @@ package cli;
 
 import utils.*;
 
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
+
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
-import filesystem.FileSystem;
 import peer.RMIservice;
 
 public class TestApp {
@@ -22,8 +17,8 @@ public class TestApp {
 	public static void main(String [] args) {
 		System.out.println(args[PEER_AP]);
 		System.out.println(args[COMMAND]);
-		System.out.println(args[OPND_1]);
-		System.out.println(args[OPND_2]);
+		//System.out.println(args[OPND_1]);
+		//System.out.println(args[OPND_2]);
 
 		if(!validCommand(args)) {
 			System.out.println("INVALID COMMAND");
