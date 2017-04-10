@@ -1,6 +1,7 @@
 package filesystem;
 
 import peer.Peer;
+import protrocols.BackupInitiator;
 import utils.Message;
 import utils.Utils;
 
@@ -52,14 +53,8 @@ public class UpdateRequest implements Runnable {
 			peer.getDB().updateReplicationDegree(-1, chunkKey);
 			
 			if (!peer.getDB().desiredReplication(chunkKey)) {
-				try {
-					Thread.sleep(Utils.randomNumber(0, 400));
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
 				
-				// Initiate Chunk backup subprotocol
-				// Listen for putchunk
+				new Thread(new BackupInitiator(peer, peer.getDB().getChunkInfo(chunkKey))).start();
 				
 			}
 		}

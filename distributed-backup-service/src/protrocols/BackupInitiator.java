@@ -1,6 +1,7 @@
 package protrocols;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import filesystem.FileData;
@@ -14,6 +15,9 @@ public class BackupInitiator implements Runnable {
 	private Peer peer;
 	private String filePath;
 	private int replicationDegree;
+	
+	private ChunkData chunk;
+	
 	private static final int MAX_TRIES = 5;
 
 	public BackupInitiator(Peer peer, String filePath, int replicationdegree) {
@@ -21,37 +25,47 @@ public class BackupInitiator implements Runnable {
 		this.filePath = filePath;
 		this.replicationDegree = replicationdegree;
 	}
-
-	@Override
-	public void run() {
+	
+	public BackupInitiator(Peer peer, ChunkData chunk) {
+		this.peer = peer;
+		this.chunk = chunk;
+	}
+	
+	private Message buildPutChunkMessage(String fileId, Integer replicationDegree, Integer chunkNo, byte[] chunk) {
+		EnumMap<Field, String> messageHeader = new EnumMap<Field, String>(Field.class);
+		
+		messageHeader.put(Field.MESSAGE_TYPE, "PUTCHUNK");
+		messageHeader.put(Field.VERSION, peer.getProtocolVersion());
+		messageHeader.put(Field.SENDER_ID, peer.getId());
+		messageHeader.put(Field.FILE_ID, fileId);
+		messageHeader.put(Field.REPLICATION_DEGREE, Integer.toString(replicationDegree));
+		messageHeader.put(Field.CHUNK_NO, Integer.toString(chunkNo));
+		
+		return new Message(messageHeader, chunk);
+	}
+	
+	private void sendFile() {
 		if (peer.getFs().fileExist(filePath)) {
 			try {
 				File load = new File(filePath);
 				FileData info = new FileData(load, replicationDegree);
 				String fileid = info.getFileId();
 				
-				
 				ArrayList<byte[]> splitted = peer.getFs().splitFile(load);
 				
 				info.setChunkNo(splitted.size());
-					
-				
-				System.out.println("SPITTED" + splitted.size());
-				
-				EnumMap<Field, String> messageHeader = new EnumMap<Field, String>(Field.class);
-				messageHeader.put(Field.MESSAGE_TYPE, "PUTCHUNK");
-				messageHeader.put(Field.VERSION, peer.getProtocolVersion());
-				messageHeader.put(Field.SENDER_ID, peer.getId());
-				messageHeader.put(Field.FILE_ID, fileid);
-				messageHeader.put(Field.REPLICATION_DEGREE, Integer.toString(replicationDegree));
 				
 				System.out.println("Splited size " + splitted.size());
-				for(int i = 0; i < splitted.size(); i++ ) {
-					messageHeader.put(Field.CHUNK_NO, Integer.toString(i));
-					Message putchunk = new Message(messageHeader, splitted.get(i));
-
+				
+				for(int i = 0; i < splitted.size(); i++) {
+					byte[] chunkData = splitted.get(i);
+					Message putchunk = buildPutChunkMessage(fileid, replicationDegree, i, chunkData);
+					String chunkKey = fileid + i;
+					
+					peer.getDB().saveChunkInfo(chunkKey, new ChunkData(chunkKey, 0, replicationDegree, chunkData.length, fileid, i));
 					sendPackage(putchunk);
-
+					peer.getFs().saveDatabase(peer.getDB()); // TODO
+					
 					System.out.println(putchunk.toString());
 				}
 				
@@ -66,8 +80,40 @@ public class BackupInitiator implements Runnable {
 		else {
 			System.out.println("Backup Initiator: file doesn't exist");
 		}
+	}
+	
+	void sendChunk() {
+		byte[] storedChunk;
 		
+		try {
+			storedChunk = peer.getFs().loadChunk(chunk.getFileId(), chunk.getChunkNo());
+			Message putchunk = buildPutChunkMessage(chunk.getFileId(), replicationDegree, chunk.getChunkNo(), storedChunk);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
 
+	@Override
+	public void run() {
+		if (chunk != null) {
+			// activate flag to listen to related PUTCHUNK messages
+			peer.getDB().listenPutChunkFlag(chunk.getChunkKey());
+			
+			try {
+				Thread.sleep(Utils.randomNumber(0, 400));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+			// if chunk has already been sent
+			if (!peer.getDB().getPutChunkSent(chunk.getChunkKey())) {
+				peer.getDB().removePutChunkFlag(chunk.getChunkKey());
+				sendChunk();
+			}
+			
+		} else {
+			sendFile();
+		}
 	}
 
 
@@ -76,8 +122,6 @@ public class BackupInitiator implements Runnable {
 		String chunkKey = putchunk.getFileId() + putchunk.getChunkNo();
 		
 		System.out.println(putchunk.getFileId());
-		
-		peer.getDB().saveChunkInfo(chunkKey, new ChunkData(chunkKey, 0, putchunk.getReplicationDeg(), putchunk.getData().length, putchunk.getFileId(), putchunk.getChunkNo()));
 			
 		while (attempts <= MAX_TRIES) {
 			peer.getBackupChannel().sendMessage(putchunk);
@@ -87,15 +131,15 @@ public class BackupInitiator implements Runnable {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			
 			System.out.println(peer.getDB().getChunkInfo(chunkKey).getCurrentReplication());
+			
 			if (peer.getDB().desiredReplication(chunkKey)) {
 				return;
 			}
 			
 			attempts++;
 		}
-		peer.getFs().saveDatabase(peer.getDB()); //TODO
-		
 	}
-
 }
+

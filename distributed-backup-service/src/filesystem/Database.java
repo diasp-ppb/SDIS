@@ -9,6 +9,7 @@ public class Database {
 	private HashMap<String, ChunkData> storedChunks;
 	private HashMap<String, FileData> sentFiles;
 	private HashMap<String, Boolean> chunkSent;
+	private HashMap<String, Boolean> putChunkSent;
 
 	private static int UNIQUE_ID = 0;
 
@@ -96,10 +97,27 @@ public class Database {
 	}
 	
 	
-	
 	public void removeFile(String path) {
 		if(path != null)
 			sentFiles.remove(path);
+	}
+	
+	public void listenPutChunkFlag(String key) {
+		putChunkSent.put(key, false);
+	}
+	
+	public void removePutChunkFlag(String key) {
+		putChunkSent.remove(key);
+	}
+	
+	public void markPutChunkSent(String key) {
+		if (putChunkSent.get(key) != null) {
+			putChunkSent.put(key, true);
+		}
+	}
+	
+	public boolean getPutChunkSent(String key) {
+		return putChunkSent.get(key);
 	}
 	
 	// List Chunk Information
