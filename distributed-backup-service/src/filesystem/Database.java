@@ -27,51 +27,55 @@ public class Database {
 	}
 	
 	// Methods related to chunks stored by peer
-	public HashMap<String, ChunkData> getStoredChunks() {
+	public synchronized HashMap<String, ChunkData> getStoredChunks() {
+		notify();
 		return storedChunks;
 	}
 
-	public ChunkData getChunkInfo(String key) {
-		return storedChunks.get(key);
+	public synchronized ChunkData getChunkInfo(String key) {
+		ChunkData out = storedChunks.get(key);
+		notify();
+		return out;
 	}
 
-	public void saveChunkInfo(String key, ChunkData info) {
+	public synchronized void saveChunkInfo(String key, ChunkData info) {
 		storedChunks.put(key, info);
+		notify();
 	}
 
-	public boolean chunkOnDB(String key) {
-		return storedChunks.containsKey(key);
+	public synchronized boolean chunkOnDB(String key) {
+		boolean  out = storedChunks.containsKey(key);
+		notify();
+		return out;
 	}
 
-	public boolean desiredReplication(String key) {
+	public synchronized boolean desiredReplication(String key) {
 		if (!chunkOnDB(key)) {
+			notify();
 			return false;
 		}
 
 		ChunkData chunk = getChunkInfo(key);
-		
+		notify();
 		return chunk.getCurrentReplication() >= chunk.getMinReplication();
 	}
 	
-	public void updateReplicationDegree(int change, String key) {
+	public synchronized void updateReplicationDegree(int change, String key) {
 		storedChunks.get(key).updateReplicationDegree(change);
+		notify();
 	}
 	
-	public ArrayList<ChunkData> getChunksOrderedByReplication() {
+	public synchronized ArrayList<ChunkData> getChunksOrderedByReplication() {
 		ArrayList<ChunkData> chunkList = new ArrayList<ChunkData>();
 		
 		chunkList.addAll(storedChunks.values());
 		chunkList.sort(Comparator.comparing(ChunkData::getChunkKey));
-		
-		for (ChunkData chunk : chunkList) {
-			System.out.println(chunk.getCurrentReplication());
-		}
-		
+		notify();
 		return chunkList;
 	}
 	
 	// Returns a list of chunkId for chunks with perceived replication degree higher than desired	
-	public ArrayList<ChunkData> getChunksHigherReplication() {
+	public synchronized ArrayList<ChunkData> getChunksHigherReplication() {
 		ArrayList<ChunkData> chunkList = new ArrayList<ChunkData>();
 		
 		for (ChunkData chunk : storedChunks.values()) {
@@ -80,69 +84,90 @@ public class Database {
 			}
 		}
 		
+		notify();
 		return chunkList;
 	}
 	
 	// Methods related to files sent by peer
-	public HashMap<String, FileData> getSentFiles() {
-		return sentFiles;
+	public synchronized HashMap<String, FileData> getSentFiles() {
+		HashMap<String, FileData> out = sentFiles;
+		notify();
+		return out;
 	}
 
-	public FileData getFileData(String filepath) {
-		return sentFiles.get(filepath);
+	public synchronized FileData getFileData(String filepath) {
+		FileData out = sentFiles.get(filepath);
+		notify();
+		return out;
 	}
-	public void saveStoredFile(String filepath, FileData fileinfo) {
+	public synchronized void saveStoredFile(String filepath, FileData fileinfo) {
 		sentFileId.add(fileinfo.getFileId());
 		sentFiles.put(filepath, fileinfo);
+		notify();
 	}
 	
-	public boolean sentFileId(String fileid) {
-		return sentFileId.contains(fileid);
+	public synchronized boolean sentFileId(String fileid) {
+		boolean out  = sentFileId.contains(fileid);
+		notify();
+		return out;
 	}
 	
-	public void registerChunkSent(String chunkId) {
+	public synchronized void registerChunkSent(String chunkId) {
 		chunkSent.put(chunkId, true);
+		notify();
 	}
 	
-	public void clearChunkSent(String chunkId) {
+	public synchronized void clearChunkSent(String chunkId) {
 		chunkSent.put(chunkId, false); 
-		// TODO  OU DELETE?
+		notify();
 	}
 	
-	public boolean chunkAlreadySent(String chunkId) {
-		if (chunkSent.get(chunkId) != null)
-			return chunkSent.containsKey(chunkId);
+	public synchronized boolean chunkAlreadySent(String chunkId) {
+		if (chunkSent.get(chunkId) != null){
+			boolean out = chunkSent.containsKey(chunkId);
+			notify();
+			return out;
+		}
+		
+		notify();
 		return false;
 	}
 	
-	public void removeChunk(String chunkId) {
+	public synchronized void removeChunk(String chunkId) {
 		chunkSent.remove(chunkId);
 		storedChunks.remove(chunkId);
+		notify();
 	}
 	
 	
-	public void removeFile(String path) {
+	public synchronized void removeFile(String path) {
 		if(path != null)
 			sentFiles.remove(path);
+		notify();
 	}
 	
-	public void listenPutChunkFlag(String key) {
+	public synchronized void listenPutChunkFlag(String key) {
 		putChunkSent.put(key, false);
+		notify();
 	}
 	
-	public void removePutChunkFlag(String key) {
+	public synchronized void removePutChunkFlag(String key) {
 		putChunkSent.remove(key);
+		notify();
 	}
 	
-	public void markPutChunkSent(String key) {
+	public synchronized void markPutChunkSent(String key) {
 		if (putChunkSent.get(key) != null) {
 			putChunkSent.put(key, true);
 		}
+		notify();
 	}
 	
-	public boolean getPutChunkSent(String key) {
+	public synchronized boolean getPutChunkSent(String key) {
 		Boolean response = putChunkSent.get(key);
+		
 		if (response != null) {
+			notify();
 			return response;
 		}
 		
@@ -150,7 +175,7 @@ public class Database {
 	}
 	
 	// List Chunk Information
-	public String ListChunks() {
+	public synchronized String ListChunks() {
 		
 		String out = "";
 		
@@ -159,7 +184,7 @@ public class Database {
 			out +=key + " with size " + value.getChunkSize() +  " bytes and replication "+ value.getCurrentReplication();
 			out +="\n";
 		}
-		
+		notify();
 		return out;
 	}
 }

@@ -55,9 +55,6 @@ public class BackupInitiator implements Runnable {
 				
 				info.setChunkNo(splitted.size());
 				
-				System.out.println("Splited size " + splitted.size());
-			
-				
 				for(int i = 0; i < splitted.size(); i++) {
 					byte[] chunkData = splitted.get(i);
 					Message putchunk = buildPutChunkMessage(fileid, replicationDegree, i, chunkData);
@@ -132,8 +129,7 @@ public class BackupInitiator implements Runnable {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			
-			System.out.println("rep " + replication);
+		
 			if (replication >= replicationDegree) {
 				return;
 			}
@@ -146,7 +142,7 @@ public class BackupInitiator implements Runnable {
 	
 	public void increaseReplicationDegree() {
 		replication += 1;
-		System.out.println("INCREASED " + replication);
+		
 	}
 }
 

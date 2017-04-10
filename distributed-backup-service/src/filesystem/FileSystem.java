@@ -198,8 +198,6 @@ public class FileSystem {
 
 	private void saveFile(String name,byte[] data , boolean append) {
 
-		System.out.println(data.length);
-
 		if(!fileExist(filesDir + name)) {
 			File newfile = new File(filesDir + name);
 			try {
@@ -299,8 +297,6 @@ public class FileSystem {
 		String chunks = "chunks.txt";
 		String files = "files.txt";
 
-		System.out.println("saving DB");
-
 		File backupFile = new File(backupDir + chunks);
 		File backupChunks = new File(backupDir + files);
 		if(!fileExist(backupDir + chunks)) {	
@@ -328,8 +324,6 @@ public class FileSystem {
 
 		Map<String, FileData> save =db.getSentFiles();
 
-		System.out.println("SAVEDB " + save.size());
-
 		Iterator<Entry<String, FileData>> it = save.entrySet().iterator();
 
 		if(it.hasNext()) {
@@ -348,9 +342,6 @@ public class FileSystem {
 
 		Map<String, ChunkData> chunksMap =  db.getStoredChunks();
 
-		System.out.println("SAVEDB chunks" + chunksMap.size());
-		System.out.println("SAVEDB chunks" + chunksMap.entrySet().iterator().hasNext());
-
 		Iterator<Entry<String, ChunkData>> itChunk = chunksMap.entrySet().iterator();
 
 		if(itChunk.hasNext()){
@@ -364,7 +355,7 @@ public class FileSystem {
 			}
 		}
 
-
+		notify();
 	}
 
 	private void clearFile(File file) {
@@ -379,7 +370,7 @@ public class FileSystem {
 	}
 
 
-	public boolean loadDatabase(Database db, Disk disk) {
+	public synchronized boolean loadDatabase(Database db, Disk disk) {
 
 		String files = backupDir + "files.txt";
 		String chunks = backupDir + "chunks.txt";
@@ -390,8 +381,6 @@ public class FileSystem {
 
 				while ((line = br.readLine()) != null) {
 					String [] parts = line.split("\\s+");
-					System.out.println(parts.length);
-					System.out.println(parts[6]);
 					String path = parts[0];
 					String name = parts[1];
 					long filesize = Long.parseLong(parts[2]);
@@ -436,7 +425,7 @@ public class FileSystem {
 			}
 		}
 
-
+		notify();
 		return true;
 	}
 }

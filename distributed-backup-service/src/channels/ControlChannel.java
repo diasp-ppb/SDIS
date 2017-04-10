@@ -45,11 +45,7 @@ public class ControlChannel extends Channel{
 					String key =  received.getFileId()+received.getChunkNo();
 					if(backupInitiators.containsKey(key)){
 						backupInitiators.get(key).increaseReplicationDegree();
-						System.out.println("UPDAte");
 					}
-					
-					System.out.println(backupInitiators);
-					System.out.println(key);
 					new Thread(new UpdateRequest(peer, received)).start();
 					break;
 				case "GETCHUNK":

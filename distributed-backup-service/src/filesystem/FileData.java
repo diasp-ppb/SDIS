@@ -64,7 +64,7 @@ public class FileData {
 	}
 	
 	private void hash() throws NoSuchAlgorithmException {
-		fileId = DatatypeConverter.printHexBinary(Utils.sha256(name + owner + lastModification + "" + fileSize));
+		fileId = DatatypeConverter.printBase64Binary(Utils.sha256(name + owner + lastModification + fileSize));
 	}
 	
 	public String getName() {

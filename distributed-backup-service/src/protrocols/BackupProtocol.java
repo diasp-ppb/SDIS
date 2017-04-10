@@ -4,7 +4,6 @@ import java.net.DatagramPacket;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import filesystem.Database;
-import filesystem.FileSystem;
 import filesystem.ChunkData;
 import peer.Peer;
 import utils.Message;
@@ -106,7 +105,7 @@ public class BackupProtocol implements Runnable {
 		if(db.chunkOnDB(chunkKey)) {
 			
 			ChunkData data = db.getChunkInfo(chunkKey);
-			System.out.println(data.getCurrentReplication() );
+			
 			if(data.getCurrentReplication() >= msg.getReplicationDeg()) {
 				peer.getDisk().releaseSpace(msg.getData().length);
 				db.removeChunk(chunkKey);
