@@ -55,6 +55,7 @@ public class Peer implements RMIservice {
 		fs = new FileSystem();
 		db = new Database();
 		disk = new Disk();
+		fs.loadDatabase(db,disk);
 	}
 
 	public String getProtocolVersion() {
