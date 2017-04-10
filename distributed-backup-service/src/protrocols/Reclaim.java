@@ -13,9 +13,9 @@ public class Reclaim implements Runnable {
 	Peer peer;
 	long maxSize;
 	
-	public Reclaim(Peer peer, int maxDiskSize) {
+	public Reclaim(Peer peer, long l) {
 		this.peer = peer;
-		maxSize = maxDiskSize;
+		maxSize = l;
 	}
 	
 	private Message buildRemovedMessage(String fileId, int chunkNo) {
@@ -30,7 +30,7 @@ public class Reclaim implements Runnable {
 		return new Message(messageHeader);
 	}
 	
-	private void removeChunks(long sizeToRemove) {
+	public void removeChunks(long sizeToRemove) {
 		long remainingDifference = sizeToRemove;
 		ArrayList<String> toRemove = new ArrayList<String>();
 		
