@@ -3,11 +3,15 @@ package filesystem;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class Database {
 
 	private HashMap<String, ChunkData> storedChunks;
+	
 	private HashMap<String, FileData> sentFiles;
+	private HashSet<String> sentFileId;
+	
 	private HashMap<String, Boolean> chunkSent;
 	private HashMap<String, Boolean> putChunkSent;
 
@@ -15,8 +19,12 @@ public class Database {
 
 	public Database() {
 		storedChunks = new HashMap<String, ChunkData>();
+		
 		sentFiles = new HashMap<String, FileData>();
+		sentFileId = new HashSet<String>();
+		
 		chunkSent = new HashMap<String, Boolean>();
+		putChunkSent = new HashMap<String, Boolean>();
 	}
 	
 	// Methods related to chunks stored by peer
@@ -72,9 +80,13 @@ public class Database {
 		return sentFiles.get(filepath);
 	}
 	public void saveStoredFile(String filepath, FileData fileinfo) {
+		sentFileId.add(fileinfo.getFileId());
 		sentFiles.put(filepath, fileinfo);
 	}
 	
+	public boolean sentFileId(String fileid) {
+		return sentFileId.contains(fileid);
+	}
 	
 	public void registerChunkSent(String chunkId) {
 		chunkSent.put(chunkId, true);
@@ -117,7 +129,12 @@ public class Database {
 	}
 	
 	public boolean getPutChunkSent(String key) {
-		return putChunkSent.get(key);
+		Boolean response = putChunkSent.get(key);
+		if (response != null) {
+			return response;
+		}
+		
+		return false;
 	}
 	
 	// List Chunk Information

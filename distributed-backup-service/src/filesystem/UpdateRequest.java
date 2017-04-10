@@ -53,7 +53,6 @@ public class UpdateRequest implements Runnable {
 			peer.getDB().updateReplicationDegree(-1, chunkKey);
 			
 			if (!peer.getDB().desiredReplication(chunkKey)) {
-				
 				new Thread(new BackupInitiator(peer, peer.getDB().getChunkInfo(chunkKey))).start();
 				
 			}

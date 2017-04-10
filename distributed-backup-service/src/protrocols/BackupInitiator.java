@@ -92,6 +92,7 @@ public class BackupInitiator implements Runnable {
 		try {
 			storedChunk = peer.getFs().loadChunk(chunk.getFileId(), chunk.getChunkNo());
 			Message putchunk = buildPutChunkMessage(chunk.getFileId(), replicationDegree, chunk.getChunkNo(), storedChunk);
+			sendPackage(putchunk);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
