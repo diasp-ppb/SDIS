@@ -1,6 +1,7 @@
 package protrocols;
 
 import java.net.DatagramPacket;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import filesystem.Database;
 import filesystem.FileSystem;
@@ -36,6 +37,33 @@ public class BackupProtocol implements Runnable {
 
 		return new Message(messageHeader);
 	}
+	
+	// checks if it's possible to clear space by deleting only files with higher than desired replication degree
+	private boolean possibleToClearSpace(int sizeToClear) {
+		ArrayList<ChunkData> chunksHigherReplication = peer.getDB().getChunksHigherReplication();
+		int accumulated = 0;
+		
+		for (ChunkData chunk : chunksHigherReplication) {
+			accumulated += chunk.getChunkSize();
+			
+			if (accumulated >= sizeToClear) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	private boolean clearSpace(int sizeToClear) {
+		if (possibleToClearSpace(sizeToClear)) {
+			Reclaim reclaim = new Reclaim(peer, peer.getDisk().getMaxSize());
+			reclaim.removeChunks(sizeToClear);
+			
+			return true;
+		}
+		
+		return false;
+	}
 
 	private boolean updateDB(Message msg) {
 
@@ -45,12 +73,14 @@ public class BackupProtocol implements Runnable {
 
 		if(db.chunkOnDB(chunkKey)) {
 			return false;
-		}
-		else {
+		} else {
 
 			if(!peer.getDisk().reserveSpace(msg.getData().length)) {
-				System.out.println("Not enough space in disk");
-				return false;
+				if (!clearSpace(msg.getData().length)) {
+					System.out.println("Not enough space to store chunk.");
+					return false;
+				}
+				System.out.println("Successfully cleared space to store chunk.");
 			}
 
 			db.saveChunkInfo(chunkKey, new ChunkData(chunkKey, 1, msg.getReplicationDeg(), msg.getData().length, msg.getFileId(), msg.getChunkNo()));
@@ -65,7 +95,11 @@ public class BackupProtocol implements Runnable {
 		Database db = peer.getDB();
 
 		if(!peer.getDisk().reserveSpace(msg.getData().length)) {
-			System.out.println("Not enough space in disk");
+			if (!clearSpace(msg.getData().length)) {
+				System.out.println("Not enough space to store chunk.");
+				return false;
+			}
+			System.out.println("Successfully cleared space to store chunk.");
 			return false;
 		}
 

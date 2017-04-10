@@ -70,6 +70,19 @@ public class Database {
 		return chunkList;
 	}
 	
+	// Returns a list of chunkId for chunks with perceived replication degree higher than desired	
+	public ArrayList<ChunkData> getChunksHigherReplication() {
+		ArrayList<ChunkData> chunkList = new ArrayList<ChunkData>();
+		
+		for (ChunkData chunk : storedChunks.values()) {
+			if (chunk.getCurrentReplication() > chunk.getMinReplication()) {
+				chunkList.add(chunk);
+			}
+		}
+		
+		return chunkList;
+	}
+	
 	// Methods related to files sent by peer
 	public HashMap<String, FileData> getSentFiles() {
 		return sentFiles;
