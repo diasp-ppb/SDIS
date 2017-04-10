@@ -5,6 +5,7 @@ import filesystem.Database;
 import filesystem.FileData;
 import peer.Peer;
 import utils.Message;
+import utils.Utils;
 import utils.Message.Field;
 
 public class DeleteInitiator implements Runnable {
@@ -15,7 +16,6 @@ public class DeleteInitiator implements Runnable {
 		this.peer = peer;
 		this.filePath = filePath;
 	}
-	
 	
 	private Message buildDeleteMessage( String fileId) {
 		EnumMap<Field, String> messageHeader = new EnumMap<Field, String>(Field.class);
@@ -28,26 +28,29 @@ public class DeleteInitiator implements Runnable {
 		return new Message(messageHeader);
 	}
 	
-	
 	@Override
 	public void run() {
 		Database DB = peer.getDB();
-		
 		FileData fileInfo = DB.getFileData(filePath);
-
-		if(fileInfo == null) return;
 		
-		String fileId =new String (fileInfo.getFileId());
+		if (fileInfo == null) {
+			return;
+		}
 		
+		String fileId = new String (fileInfo.getFileId());
 		Message delete = buildDeleteMessage(fileId);
 		
-		this.peer.getControlChannel().sendMessage(delete);
-				
+		// Send DELETE thrice - 1 second interval
+		for (int i = 0; i < 3; i++) {
+			this.peer.getControlChannel().sendMessage(delete);
+			
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 		
 		DB.removeFile(filePath);
-		
-		System.out.println("Ended");
-		
-		
 	}
 }
