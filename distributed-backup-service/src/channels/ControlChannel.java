@@ -31,21 +31,23 @@ public class ControlChannel extends Channel{
 
 			Message received = new Message(packet);
 
-			switch (received.getType()) {
-			case "STORED":
-				new Thread(new UpdateRequest(peer, received)).start();
-				break;
-			case "GETCHUNK":
-				new Thread(new RestoreProtocol(peer, received)).start();
-				break;
-			case "DELETE":
-				new Thread(new DeleteProtocol(peer,received)).start();
-				break;
-			case "REMOVED":
-				new Thread(new UpdateRequest(peer, received)).start();
-				break;
-			default:
-				break;
+			if(!received.getSenderId().equals(peer.getId())) {
+				switch (received.getType()) {
+				case "STORED":
+					new Thread(new UpdateRequest(peer, received)).start();
+					break;
+				case "GETCHUNK":
+					new Thread(new RestoreProtocol(peer, packet)).start();
+					break;
+				case "DELETE":
+					new Thread(new DeleteProtocol(peer,received)).start();
+					break;
+				case "REMOVED":
+					new Thread(new UpdateRequest(peer, received)).start();
+					break;
+				default:
+					break;
+				}
 			}
 		}
 	}

@@ -127,6 +127,14 @@ public class Peer implements RMIservice {
 		return disk;
 	}
 	
+	public int getmcRPort() {
+		return mdrPort;
+	}
+	
+	public InetAddress getmdrAddress() {
+		return mdrAddress;
+	}
+	
 	@Override
 	public void backup(String path, int replicationDegree) throws RemoteException {
 		System.out.println("Called backup with path: "  + path + " and repDegree: " + replicationDegree + ".");
